@@ -1,31 +1,17 @@
 package Classes;
 
-import Utils.DBUtils;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class User {
-  private int userId;
   private String username;
   private String password;
-  private int roleId;
+  private String role;
 
-  public User(int userId, String username, String password, int roleId) {
-    this.userId = userId;
+  public User(String username, String password, String role) {
     this.username = username;
     this.password = password;
-    this.roleId = roleId;
+    this.role = role;
   }
 
-  public int getUserId() {
-    return userId;
-  }
-
-  public void setUserId(int userId) {
-    this.userId = userId;
-  }
+  // Getters và Setters
 
   public String getUsername() {
     return username;
@@ -43,25 +29,15 @@ public class User {
     this.password = password;
   }
 
-  public int getRoleId() {
-    return roleId;
+  public String getRole() {
+    return role;
   }
 
-  public void setRoleId(int roleId) {
-    this.roleId = roleId;
+  public void setRole(String role) {
+    this.role = role;
   }
 
-  public boolean hasRole(String roleName) throws SQLException {
-    String query = "SELECT * FROM roles WHERE role_id = ?";
-    try (Connection conn = DBUtils.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query)) {
-      stmt.setInt(1, roleId);
-      try (ResultSet rs = stmt.executeQuery()) {
-        if (rs.next() && rs.getString("role_name").equals(roleName)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  public boolean hasRole(String role) {
+    return this.role.equals(role);
   }
 }

@@ -14,10 +14,10 @@ public class UserDAO {
       stmt.setString(1, username);
       try (ResultSet rs = stmt.executeQuery()) {
         if (rs.next()) {
-          int id = rs.getInt("user_id");
+          String dbUsername = rs.getString("username");
           String password = rs.getString("password");
-          int roleId = rs.getInt("role_id");
-          return new User(id, username, password, roleId);
+          String role = rs.getString("role");
+          return new User(dbUsername, password, role);
         }
       }
     }
