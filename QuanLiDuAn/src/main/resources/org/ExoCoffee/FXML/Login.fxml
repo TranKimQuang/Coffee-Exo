@@ -27,12 +27,12 @@
                 <Insets top="20" right="20" bottom="20" left="20" />
             </padding>
             <children>
-                <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-                <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-                <Label fx:id="errorLabel" textFill="red" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-                <Button text="Login" onAction="#handleLogin" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-padding: 5px; -fx-background-color: #f0f0f0; -fx-border-color: #dcdcdc; -fx-border-radius: 5px; -fx-background-radius: 5px;" />
+                <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-padding: 5px; -fx-background-color: #f0f0f0; -fx-border-color: #dcdcdc; -fx-border-radius: 5px; -fx-background-radius: 5px;" />
+                <Label fx:id="errorLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: red;" />
+                <Button text="Login" onAction="#handleLogin" GridPane.rowIndex="3" GridPane.columnIndex="1" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-font-size: 14px; -fx-background-radius: 5px;" />
             </children>
         </GridPane>
     </children>

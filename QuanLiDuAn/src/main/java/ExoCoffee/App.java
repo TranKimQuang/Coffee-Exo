@@ -18,7 +18,7 @@ public class App extends Application {
 
   public static void setRoot(String fxml) {
     try {
-      FXMLLoader loader = new FXMLLoader(App.class.getResource("/org/ExoCoffee/ExoCoffee/" + fxml + ".fxml"));
+      FXMLLoader loader = new FXMLLoader(App.class.getResource("/org/ExoCoffee/FXML/" + fxml + ".fxml"));
       Scene scene = new Scene(loader.load());
       primaryStage.setScene(scene);
       primaryStage.show();
