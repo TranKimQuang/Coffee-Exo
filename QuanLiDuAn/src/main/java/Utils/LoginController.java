@@ -8,7 +8,7 @@ import javafx.scene.control.TextField;
 import Classes.User;
 import java.sql.SQLException;
 
-public class LoginControlller {
+public class LoginController {
   @FXML
   private TextField usernameField;
   @FXML
