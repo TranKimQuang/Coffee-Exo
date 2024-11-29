@@ -1,6 +1,6 @@
-package Utils;
+package ExoCoffee.Data;
 
-import Classes.Product;
+import ExoCoffee.Models.Product;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

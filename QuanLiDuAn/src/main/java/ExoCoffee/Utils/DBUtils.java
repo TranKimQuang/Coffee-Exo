@@ -1,4 +1,4 @@
-package Utils;
+package ExoCoffee.Utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

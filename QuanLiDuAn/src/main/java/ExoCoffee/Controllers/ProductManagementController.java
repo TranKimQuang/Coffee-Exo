@@ -1,7 +1,8 @@
-package Utils;
+package ExoCoffee.Controllers;
 
 
-import Classes.Product;
+import ExoCoffee.Models.Product;
+import ExoCoffee.Data.ProductDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

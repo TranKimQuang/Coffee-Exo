@@ -1,4 +1,4 @@
-package Classes;
+package ExoCoffee.Models;
 
 public class User {
   private String username;

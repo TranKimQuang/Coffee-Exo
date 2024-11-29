@@ -1,6 +1,6 @@
-package Main;
+package ExoCoffee.Controllers;
 
-import Classes.App;
+import ExoCoffee.Models.App;
 import javafx.fxml.FXML;
 
 public class MainController {

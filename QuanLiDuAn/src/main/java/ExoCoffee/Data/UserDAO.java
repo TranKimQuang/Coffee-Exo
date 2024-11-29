@@ -1,6 +1,8 @@
-package Utils;
+package ExoCoffee.Data;
 
-import Classes.User;
+import ExoCoffee.Models.User;
+import ExoCoffee.Utils.DBUtils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

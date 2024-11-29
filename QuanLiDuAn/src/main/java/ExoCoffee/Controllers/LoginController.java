@@ -1,11 +1,13 @@
-package Utils;
+package ExoCoffee.Controllers;
 
-import Classes.App;
+import ExoCoffee.Models.App;
+import ExoCoffee.Utils.CommonUtils;
+import ExoCoffee.Data.UserDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import Classes.User;
+import ExoCoffee.Models.User;
 import java.sql.SQLException;
 
 public class LoginController {
