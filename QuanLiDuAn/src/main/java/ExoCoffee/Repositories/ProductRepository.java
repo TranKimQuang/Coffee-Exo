@@ -1,11 +1,11 @@
-package ExoCoffee.Data;
+package ExoCoffee.Repositories;
 
-import ExoCoffee.Models.Product;
+import ExoCoffee.Models.ProductDTO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDAO {
+public class ProductRepository {
   private Connection getConnection() throws SQLException {
     // Kết nối đến cơ sở dữ liệu
     String url = "jdbc:mysql://localhost:3306/coffeemanager";
@@ -14,44 +14,44 @@ public class ProductDAO {
     return DriverManager.getConnection(url, user, password);
   }
 
-  public List<Product> getAllProducts() throws SQLException {
+  public List<ProductDTO> getAllProducts() throws SQLException {
     String query = "SELECT * FROM products";
-    List<Product> products = new ArrayList<>();
+    List<ProductDTO> productDTOS = new ArrayList<>();
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query);
          ResultSet resultSet = statement.executeQuery()) {
       while (resultSet.next()) {
-        Product product = new Product(
+        ProductDTO productDTO = new ProductDTO(
             resultSet.getString("name"),
             resultSet.getInt("productId"),
             resultSet.getDouble("price"),
             resultSet.getString("category")
         );
-        products.add(product);
+        productDTOS.add(productDTO);
       }
     }
-    return products;
+    return productDTOS;
   }
 
-  public void addProduct(Product product) throws SQLException {
+  public void addProduct(ProductDTO productDTO) throws SQLException {
     String query = "INSERT INTO products (name, productId, price, category) VALUES (?, ?, ?, ?)";
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setString(1, product.getName());
-      statement.setInt(2, product.getProductId());
-      statement.setDouble(3, product.getPrice());
-      statement.setString(4, product.getCategory());
+      statement.setString(1, productDTO.getName());
+      statement.setInt(2, productDTO.getProductId());
+      statement.setDouble(3, productDTO.getPrice());
+      statement.setString(4, productDTO.getCategory());
       statement.executeUpdate();
     }
   }
 
-  public void updateProduct(Product product) throws SQLException {
+  public void updateProduct(ProductDTO productDTO) throws SQLException {
     String query = "UPDATE products SET price = ?, category = ? WHERE productId = ?";
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setDouble(1, product.getPrice());
-      statement.setString(2, product.getCategory());
-      statement.setInt(3, product.getProductId());
+      statement.setDouble(1, productDTO.getPrice());
+      statement.setString(2, productDTO.getCategory());
+      statement.setInt(3, productDTO.getProductId());
       statement.executeUpdate();
     }
   }

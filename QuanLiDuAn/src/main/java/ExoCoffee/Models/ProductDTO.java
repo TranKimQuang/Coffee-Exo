@@ -1,12 +1,12 @@
 package ExoCoffee.Models;
 
-public class Product {
+public class ProductDTO {
   private int productId;
   private String name;
   private double price;
   private String category;
 
-  public Product(String name, int productId, double price, String category) {
+  public ProductDTO(String name, int productId, double price, String category) {
     this.name = name;
     this.productId = productId;
     this.price = price;

@@ -1,8 +1,8 @@
 package ExoCoffee.Controllers;
 
 
-import ExoCoffee.Models.Product;
-import ExoCoffee.Data.ProductDAO;
+import ExoCoffee.Models.ProductDTO;
+import ExoCoffee.Repositories.ProductRepository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,15 +15,15 @@ import java.sql.SQLException;
 
 public class ProductManagementController {
   @FXML
-  private TableView<Product> productTable;
+  private TableView<ProductDTO> productTable;
   @FXML
-  private TableColumn<Product, Integer> productIdColumn;
+  private TableColumn<ProductDTO, Integer> productIdColumn;
   @FXML
-  private TableColumn<Product, String> nameColumn;
+  private TableColumn<ProductDTO, String> nameColumn;
   @FXML
-  private TableColumn<Product, Double> priceColumn;
+  private TableColumn<ProductDTO, Double> priceColumn;
   @FXML
-  private TableColumn<Product, String> categoryColumn;
+  private TableColumn<ProductDTO, String> categoryColumn;
   @FXML
   private TextField productIdField;
   @FXML
@@ -33,7 +33,7 @@ public class ProductManagementController {
   @FXML
   private TextField categoryField;
 
-  private ObservableList<Product> productList;
+  private ObservableList<ProductDTO> productDTOList;
 
   @FXML
   public void initialize() {
@@ -42,17 +42,17 @@ public class ProductManagementController {
     priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
     categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
-    productList = FXCollections.observableArrayList();
-    productTable.setItems(productList);
+    productDTOList = FXCollections.observableArrayList();
+    productTable.setItems(productDTOList);
 
     loadProductData();
   }
 
   private void loadProductData() {
     // Load data from database
-    ProductDAO productDAO = new ProductDAO();
+    ProductRepository productRepository = new ProductRepository();
     try {
-      productList.setAll(productDAO.getAllProducts());
+      productDTOList.setAll(productRepository.getAllProducts());
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -65,11 +65,11 @@ public class ProductManagementController {
     double price = Double.parseDouble(priceField.getText());
     String category = categoryField.getText();
 
-    Product product = new Product(name, productId, price, category);
-    ProductDAO productDAO = new ProductDAO();
+    ProductDTO productDTO = new ProductDTO(name, productId, price, category);
+    ProductRepository productRepository = new ProductRepository();
     try {
-      productDAO.addProduct(product);
-      productList.add(product);
+      productRepository.addProduct(productDTO);
+      productDTOList.add(productDTO);
       clearFields();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -83,10 +83,10 @@ public class ProductManagementController {
     double price = Double.parseDouble(priceField.getText());
     String category = categoryField.getText();
 
-    Product product = new Product(name, productId, price, category);
-    ProductDAO productDAO = new ProductDAO();
+    ProductDTO productDTO = new ProductDTO(name, productId, price, category);
+    ProductRepository productRepository = new ProductRepository();
     try {
-      productDAO.updateProduct(product);
+      productRepository.updateProduct(productDTO);
       loadProductData();
       clearFields();
     } catch (SQLException e) {
@@ -98,9 +98,9 @@ public class ProductManagementController {
   private void handleDeleteProduct() {
     int productId = Integer.parseInt(productIdField.getText());
 
-    ProductDAO productDAO = new ProductDAO();
+    ProductRepository productRepository = new ProductRepository();
     try {
-      productDAO.deleteProduct(productId);
+      productRepository.deleteProduct(productId);
       loadProductData();
       clearFields();
     } catch (SQLException e) {

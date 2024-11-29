@@ -1,13 +1,13 @@
 package ExoCoffee.Controllers;
 
-import ExoCoffee.Models.App;
+import ExoCoffee.App;
 import ExoCoffee.Utils.CommonUtils;
-import ExoCoffee.Data.UserDAO;
+import ExoCoffee.Repositories.UserRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import ExoCoffee.Models.User;
+import ExoCoffee.Models.UserDTO;
 import java.sql.SQLException;
 
 public class LoginController {
@@ -18,7 +18,7 @@ public class LoginController {
   @FXML
   private Label errorLabel;
 
-  private UserDAO userDAO = new UserDAO();
+  private UserRepository userRepository = new UserRepository();
 
   @FXML
   public void handleLogin() {
@@ -26,10 +26,10 @@ public class LoginController {
     String password = passwordField.getText();
 
     try {
-      User user = userDAO.getUserByUsername(username);
-      if (user != null && CommonUtils.encodePas(password).equals(user.getPassword())) {
+      UserDTO userDTO = userRepository.getUserByUsername(username);
+      if (userDTO != null && CommonUtils.encodePas(password).equals(userDTO.getPassword())) {
         // Đăng nhập thành công, kiểm tra quyền truy cập
-        if (user.hasRole("Admin")) {
+        if (userDTO.hasRole("Admin")) {
           // Chuyển hướng đến giao diện quản lý dành cho Admin
           App.setRoot("admin");
         } else {

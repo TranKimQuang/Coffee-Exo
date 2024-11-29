@@ -1,4 +1,4 @@
-package ExoCoffee.Models;
+package ExoCoffee;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
