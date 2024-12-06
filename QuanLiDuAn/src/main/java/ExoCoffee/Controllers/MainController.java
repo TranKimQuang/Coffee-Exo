@@ -7,12 +7,12 @@ public class MainController {
   @FXML
   private void handleViewProducts() {
     // Chuyển hướng đến giao diện quản lý sản phẩm cho người dùng thông thường
-    App.setRoot("view_order");
+    App.setRoot("order_placement");
   }
 
   @FXML
   private void handlePlaceOrder() {
     // Chuyển hướng đến giao diện đặt hàng
-    App.setRoot("order_placement");
+    App.setRoot("product_management");
   }
 }
