@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ViewOrdersController" spacing="10" padding="10">
+    <children>
+        <TableView fx:id="orderTable">
+            <columns>
+                <TableColumn fx:id="orderIdColumn" text="Mã đơn hàng" />
+                <TableColumn fx:id="productNameColumn" text="Tên sản phẩm" />
+                <TableColumn fx:id="quantityColumn" text="Số lượng" />
+                <TableColumn fx:id="totalPriceColumn" text="Tổng giá" />
+            </columns>
+        </TableView>
+        <Button text="Xóa đơn hàng" onAction="#handleDeleteOrder" />
+    </children>
+</VBox>
