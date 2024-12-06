@@ -1,6 +1,8 @@
 package ExoCoffee.Controllers;
 
 import ExoCoffee.App;
+import ExoCoffee.Models.Cart;
+import ExoCoffee.Models.CartItem;
 import ExoCoffee.Models.ProductDTO;
 import ExoCoffee.Repositories.ProductRepository;
 import javafx.collections.FXCollections;
@@ -26,7 +28,7 @@ public class OrderPlacementController {
   private TableColumn<ProductDTO, String> categoryColumn;
 
   private ObservableList<ProductDTO> productList = FXCollections.observableArrayList();
-
+  private Cart cart = new Cart();
   @FXML
   public void initialize() {
     productIdColumn.setCellValueFactory(new PropertyValueFactory<>("productId"));
@@ -49,11 +51,13 @@ public class OrderPlacementController {
 
   @FXML
   public void handlePlaceOrder() {
-    // Xử lý đặt hàng (Ví dụ: thêm sản phẩm vào giỏ hàng)
+    ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
+    if (selectedProduct != null) { cart.addItem(selectedProduct, 1);
+      System.out.println("Đã thêm sản phẩm vào giỏ hàng: " + selectedProduct.getName()); }
   }
 
   @FXML
   public void handleViewOrders() {
-    App.setRoot("view_orders"); // Chuyển đến giao diện xem hàng đã đặt
+    App.setRoot("view_order"); // Chuyển đến giao diện xem hàng đã đặt
   }
 }
