@@ -45,4 +45,3 @@ public class ProductDTO {
     this.category = category;
   }
 }
-

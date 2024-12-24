@@ -20,6 +20,10 @@ public class Cart {
     items.removeIf(item -> item.getProduct().getProductId() == product.getProductId());
   }
 
+  public void clear() {
+    items.clear();
+  }
+
   public double getTotalPrice() {
     double total = 0;
     for (CartItem item : items) {
@@ -30,5 +34,9 @@ public class Cart {
 
   public List<CartItem> getItems() {
     return items;
+  }
+
+  public void setItems(List<CartItem> items) {
+    this.items = items;
   }
 }

@@ -1,6 +1,5 @@
 package ExoCoffee.Controllers;
 
-
 import ExoCoffee.Models.ProductDTO;
 import ExoCoffee.Repositories.ProductRepository;
 import javafx.collections.FXCollections;
@@ -10,6 +9,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 import java.sql.SQLException;
 
@@ -32,6 +33,8 @@ public class ProductManagementController {
   private TextField priceField;
   @FXML
   private TextField categoryField;
+  @FXML
+  private HBox hbox;
 
   private ObservableList<ProductDTO> productDTOList;
 
@@ -46,15 +49,34 @@ public class ProductManagementController {
     productTable.setItems(productDTOList);
 
     loadProductData();
+
+    // Thêm sự kiện khi click vào một sản phẩm trong bảng
+    productTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> loadProductDetails(newValue));
+
+    // Thiết lập Hgrow cho các thành phần trong HBox
+    HBox.setHgrow(productIdField, Priority.ALWAYS);
+    HBox.setHgrow(nameField, Priority.ALWAYS);
+    HBox.setHgrow(priceField, Priority.ALWAYS);
+    HBox.setHgrow(categoryField, Priority.ALWAYS);
   }
 
   private void loadProductData() {
-    // Load data from database
     ProductRepository productRepository = new ProductRepository();
     try {
       productDTOList.setAll(productRepository.getAllProducts());
     } catch (SQLException e) {
       e.printStackTrace();
+    }
+  }
+
+  private void loadProductDetails(ProductDTO product) {
+    if (product != null) {
+      productIdField.setText(String.valueOf(product.getProductId()));
+      nameField.setText(product.getName());
+      priceField.setText(String.valueOf(product.getPrice()));
+      categoryField.setText(product.getCategory());
+    } else {
+      clearFields();
     }
   }
 
@@ -96,15 +118,17 @@ public class ProductManagementController {
 
   @FXML
   private void handleDeleteProduct() {
-    int productId = Integer.parseInt(productIdField.getText());
-
-    ProductRepository productRepository = new ProductRepository();
-    try {
-      productRepository.deleteProduct(productId);
-      loadProductData();
-      clearFields();
-    } catch (SQLException e) {
-      e.printStackTrace();
+    ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
+    if (selectedProduct != null) {
+      int productId = selectedProduct.getProductId();
+      ProductRepository productRepository = new ProductRepository();
+      try {
+        productRepository.deleteProduct(productId);
+        loadProductData();
+        clearFields();
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
     }
   }
 

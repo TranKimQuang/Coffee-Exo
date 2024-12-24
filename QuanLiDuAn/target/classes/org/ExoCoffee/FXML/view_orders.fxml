@@ -11,9 +11,8 @@
         <TableView fx:id="orderTable">
             <columns>
                 <TableColumn fx:id="orderIdColumn" text="Mã đơn hàng" />
-                <TableColumn fx:id="productNameColumn" text="Tên sản phẩm" />
-                <TableColumn fx:id="quantityColumn" text="Số lượng" />
-                <TableColumn fx:id="totalPriceColumn" text="Tổng giá" />
+                <TableColumn fx:id="totalAmountColumn" text="Tổng số tiền" />
+                <TableColumn fx:id="orderDateColumn" text="Ngày đặt hàng" />
             </columns>
         </TableView>
         <Button text="Xóa đơn hàng" onAction="#handleDeleteOrder" />

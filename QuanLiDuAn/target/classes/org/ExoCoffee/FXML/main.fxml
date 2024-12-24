@@ -11,5 +11,6 @@
     <children>
         <Button onAction="#handleViewProducts" text="Xem sản phẩm" />
         <Button onAction="#handlePlaceOrder" text="Đặt hàng" />
+        <Button onAction="#handleViewOrders" text="Xem đơn hàng" /> <!-- Thêm nút này -->
     </children>
 </VBox>
