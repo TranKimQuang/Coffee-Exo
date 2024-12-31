@@ -1,36 +1,52 @@
 package ExoCoffee.Models;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Cart {
-  private List<CartItem> items = new ArrayList<>();
+  private ObservableList<CartItem> items = FXCollections.observableArrayList();
 
+  /**
+   * Thêm sản phẩm vào giỏ hàng.
+   *
+   * @param product  Sản phẩm cần thêm.
+   * @param quantity Số lượng sản phẩm.
+   */
   public void addItem(ProductDTO product, int quantity) {
+    if (product == null) {
+      throw new IllegalArgumentException("Sản phẩm không được để trống.");
+    }
+
+    if (quantity <= 0) {
+      throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
+    }
+
     // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
     for (CartItem item : items) {
       if (item.getProduct().getProductId() == product.getProductId()) {
+        // Nếu đã có, tăng số lượng
         item.setQuantity(item.getQuantity() + quantity);
         return;
       }
     }
+
     // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
     items.add(new CartItem(product, quantity));
   }
 
-  public void removeItem(int productId) {
-    items.removeIf(item -> item.getProduct().getProductId() == productId);
-  }
-
+  /**
+   * Xóa tất cả sản phẩm trong giỏ hàng.
+   */
   public void clear() {
     items.clear();
   }
 
-  public List<CartItem> getItems() {
+  /**
+   * Lấy danh sách sản phẩm trong giỏ hàng.
+   *
+   * @return Danh sách sản phẩm.
+   */
+  public ObservableList<CartItem> getItems() {
     return items;
-  }
-
-  public double getTotalPrice() {
-    return items.stream().mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity()).sum();
   }
 }

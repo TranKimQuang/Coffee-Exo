@@ -19,9 +19,8 @@
                 <TableColumn fx:id="categoryColumn" text="Danh mục" />
             </columns>
         </TableView>
-        <Button text="Tạo đơn hàng" onAction="#handleCreateOrder" />
+
         <Button text="Thêm vào đơn hàng" onAction="#handleAddToOrder" />
-        <Button text="Xem hàng đã đặt" onAction="#handleViewOrders" />
 
     </children>
 </VBox>

@@ -3,8 +3,8 @@ package ExoCoffee.Models;
 public class OrderProductDTO {
   private int orderId; // ID của đơn hàng
   private int productId; // ID của sản phẩm
-
   private int quantity; // Số lượng
+  private double price; // Giá sản phẩm (lấy từ bảng products)
 
   // Constructors
   public OrderProductDTO() {}
@@ -18,6 +18,13 @@ public class OrderProductDTO {
     this.orderId = orderId;
     this.productId = productId;
     this.quantity = quantity;
+  }
+
+  public OrderProductDTO(int orderId, int productId, int quantity, double price) {
+    this.orderId = orderId;
+    this.productId = productId;
+    this.quantity = quantity;
+    this.price = price;
   }
 
   // Getters và Setters
@@ -43,5 +50,22 @@ public class OrderProductDTO {
 
   public void setQuantity(int quantity) {
     this.quantity = quantity;
+  }
+
+  public double getPrice() {
+    return price;
+  }
+
+  public void setPrice(double price) {
+    this.price = price;
+  }
+
+  /**
+   * Tính tổng giá trị của sản phẩm trong đơn hàng.
+   *
+   * @return Tổng giá trị (price * quantity).
+   */
+  public double getTotalPrice() {
+    return price * quantity;
   }
 }

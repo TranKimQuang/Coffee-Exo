@@ -8,18 +8,24 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ProductManagementController" spacing="10" padding="10">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ProductManagementController" spacing="10">
+    <!-- Padding cho VBox -->
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <HBox spacing="10">
-        <TextField fx:id="nameField" promptText="Tên sản phẩm"/>
+
+    <!-- HBox chứa các trường nhập liệu và nút -->
+    <HBox fx:id="hbox" spacing="10">
+        <TextField fx:id="productIdField" promptText="Mã SP"/>
+        <TextField fx:id="nameField" promptText="Tên SP"/>
         <TextField fx:id="priceField" promptText="Giá"/>
         <TextField fx:id="categoryField" promptText="Danh mục"/>
         <Button text="Thêm" onAction="#handleAddProduct"/>
         <Button text="Sửa" onAction="#handleUpdateProduct"/>
         <Button text="Xóa" onAction="#handleDeleteProduct"/>
     </HBox>
+
+    <!-- Bảng hiển thị sản phẩm -->
     <TableView fx:id="productTable">
         <columns>
             <TableColumn fx:id="productIdColumn" text="Mã SP"/>
