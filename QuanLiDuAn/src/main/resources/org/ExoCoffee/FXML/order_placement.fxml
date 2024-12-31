@@ -22,5 +22,6 @@
         <Button text="Tạo đơn hàng" onAction="#handleCreateOrder" />
         <Button text="Thêm vào đơn hàng" onAction="#handleAddToOrder" />
         <Button text="Xem hàng đã đặt" onAction="#handleViewOrders" />
+
     </children>
 </VBox>

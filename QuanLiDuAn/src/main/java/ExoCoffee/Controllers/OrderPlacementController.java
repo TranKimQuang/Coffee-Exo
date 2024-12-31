@@ -38,25 +38,33 @@ public class OrderPlacementController {
 
   @FXML
   public void initialize() {
-    productIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+    // Liên kết cột với thuộc tính trong ProductDTO
+    productIdColumn.setCellValueFactory(new PropertyValueFactory<>("productId"));
     nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
     priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
     categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
+    // Tải dữ liệu sản phẩm vào TableView
     productTable.setItems(productList);
     loadProductData();
   }
 
+  /**
+   * Tải dữ liệu sản phẩm từ cơ sở dữ liệu.
+   */
   private void loadProductData() {
     ProductRepository productRepository = new ProductRepository();
     try {
       productList.setAll(productRepository.getAllProducts());
     } catch (SQLException e) {
       e.printStackTrace();
-      showError("Lỗi khi tải dữ liệu sản phẩm.");
+      showError("Lỗi khi tải dữ liệu sản phẩm: " + e.getMessage());
     }
   }
 
+  /**
+   * Xử lý sự kiện thêm sản phẩm vào giỏ hàng.
+   */
   @FXML
   public void handleAddToOrder() {
     ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
@@ -68,11 +76,15 @@ public class OrderPlacementController {
 
     // Thêm sản phẩm vào giỏ hàng với số lượng mặc định là 1
     cart.addItem(selectedProduct, 1);
-    showAlert("Thành công", "Sản phẩm đã được thêm vào đơn hàng.");
+    showAlert("Thành công", "Sản phẩm đã được thêm vào giỏ hàng.");
   }
+
+  /**
+   * Xử lý sự kiện tạo đơn hàng mới.
+   */
   @FXML
   public void handleCreateOrder() {
-    // Tạo đơn hàng mới
+    // Tạo đơn hàng mới với tổng giá trị ban đầu là 0
     currentOrder = new OrderDTO(0.0, new Date(), new ArrayList<>());
 
     OrderRepository orderRepository = new OrderRepository();
@@ -82,31 +94,53 @@ public class OrderPlacementController {
       showAlert("Thành công", "Đơn hàng đã được tạo. Mã đơn hàng: " + orderId);
     } catch (SQLException e) {
       e.printStackTrace();
-      showError("Lỗi khi tạo đơn hàng.");
+      showError("Lỗi khi tạo đơn hàng: " + e.getMessage());
     }
   }
 
+  /**
+   * Xử lý sự kiện đặt hàng.
+   */
   @FXML
   public void handlePlaceOrder() {
+    if (currentOrder == null) {
+      showError("Vui lòng tạo đơn hàng trước khi đặt hàng.");
+      return;
+    }
+
     if (cart.getItems().isEmpty()) {
       showError("Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
       return;
     }
 
+    // Tính tổng giá trị đơn hàng
+    double totalAmount = cart.getItems().stream()
+        .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+        .sum();
+    currentOrder.setTotalAmount(totalAmount);
+
     // Thêm các sản phẩm trong giỏ hàng vào đơn hàng hiện tại
     OrderRepository orderRepository = new OrderRepository();
     try {
+      // Cập nhật tổng giá trị đơn hàng trong cơ sở dữ liệu
+      orderRepository.updateOrderTotalAmount(currentOrder.getOrderId(), totalAmount);
+
+      // Thêm các sản phẩm vào đơn hàng
       for (CartItem item : cart.getItems()) {
         orderRepository.addProductToOrder(currentOrder.getOrderId(), item.getProduct().getProductId(), item.getQuantity());
       }
-      showAlert("Thành công", "Sản phẩm đã được thêm vào đơn hàng.");
-      cart.clear(); // Xóa giỏ hàng sau khi thêm thành công
+
+      showAlert("Thành công", "Đơn hàng đã được đặt thành công.");
+      cart.clear(); // Xóa giỏ hàng sau khi đặt hàng thành công
     } catch (SQLException e) {
       e.printStackTrace();
-      showError("Lỗi khi thêm sản phẩm vào đơn hàng.");
+      showError("Lỗi khi đặt hàng: " + e.getMessage());
     }
   }
 
+  /**
+   * Xử lý sự kiện xem danh sách đơn hàng.
+   */
   @FXML
   public void handleViewOrders() {
     try {
@@ -115,10 +149,16 @@ public class OrderPlacementController {
       showAlert("Thành công", "Đã tải danh sách đơn hàng. Số lượng đơn hàng: " + orders.size());
     } catch (SQLException e) {
       e.printStackTrace();
-      showError("Lỗi khi tải danh sách đơn hàng.");
+      showError("Lỗi khi tải danh sách đơn hàng: " + e.getMessage());
     }
   }
 
+  /**
+   * Hiển thị thông báo.
+   *
+   * @param title   Tiêu đề thông báo.
+   * @param message Nội dung thông báo.
+   */
   private void showAlert(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle(title);
@@ -126,6 +166,11 @@ public class OrderPlacementController {
     alert.showAndWait();
   }
 
+  /**
+   * Hiển thị thông báo lỗi.
+   *
+   * @param message Nội dung thông báo lỗi.
+   */
   private void showError(String message) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Lỗi");

@@ -14,7 +14,7 @@
         <TableView fx:id="orderTable">
             <columns>
                 <TableColumn fx:id="orderIdColumn" text="Mã đơn hàng" />
-                <TableColumn fx:id="productNameColumn" text="Tên sản phẩm" />
+                <TableColumn fx:id="productIdColumn" text="Mã sản phẩm" />
                 <TableColumn fx:id="quantityColumn" text="Số lượng" />
                 <TableColumn fx:id="totalPriceColumn" text="Tổng giá" />
             </columns>

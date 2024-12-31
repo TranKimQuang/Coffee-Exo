@@ -2,7 +2,6 @@ package ExoCoffee.Repositories;
 
 import ExoCoffee.Models.OrderDTO;
 import ExoCoffee.Models.OrderProductDTO;
-import ExoCoffee.Models.ProductDTO;
 import ExoCoffee.Utils.DBUtils;
 
 import java.sql.*;
@@ -38,50 +37,54 @@ public class OrderRepository {
   // Lấy danh sách sản phẩm trong đơn hàng
   private List<OrderProductDTO> getOrderProductsByOrderId(int orderId) throws SQLException {
     List<OrderProductDTO> orderProducts = new ArrayList<>();
-    String query = "SELECT product_id, quantity FROM order_products WHERE order_id = ?"; // Đổi id thành product_id
+    String query = "SELECT product_id, quantity FROM order_products WHERE order_id = ?";
     try (Connection conn = DBUtils.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(query)) {
       pstmt.setInt(1, orderId);
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
-          OrderProductDTO orderProduct = new OrderProductDTO();
-          orderProduct.setProductId(rs.getInt("product_id")); // Đổi id thành product_id
-          orderProduct.setQuantity(rs.getInt("quantity"));
-          orderProducts.add(orderProduct);
+          int productId = rs.getInt("product_id");
+          int quantity = rs.getInt("quantity");
+          orderProducts.add(new OrderProductDTO(orderId, productId, quantity));
         }
       }
     }
     return orderProducts;
   }
 
-  // Thêm đơn hàng mới
+  // Thêm đơn hàng mới và các sản phẩm liên quan
   public int addOrder(OrderDTO order) throws SQLException {
-    String query = "INSERT INTO orders (total_amount, order_date) VALUES (?, ?)";
+    String insertOrderQuery = "INSERT INTO orders (total_amount, order_date) VALUES (?, ?)";
+    String insertOrderProductQuery = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)";
+
     try (Connection conn = DBUtils.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-      pstmt.setDouble(1, order.getTotalAmount());
-      pstmt.setDate(2, new java.sql.Date(order.getOrderDate().getTime()));
-      pstmt.executeUpdate();
+         PreparedStatement insertOrderStmt = conn.prepareStatement(insertOrderQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+      // Thêm đơn hàng
+      insertOrderStmt.setDouble(1, order.getTotalAmount());
+      insertOrderStmt.setDate(2, new java.sql.Date(order.getOrderDate().getTime()));
+      insertOrderStmt.executeUpdate();
 
       // Lấy ID của đơn hàng vừa thêm
-      ResultSet rs = pstmt.getGeneratedKeys();
+      ResultSet rs = insertOrderStmt.getGeneratedKeys();
       if (rs.next()) {
-        return rs.getInt(1);
+        int orderId = rs.getInt(1);
+
+        // Thêm các sản phẩm vào đơn hàng
+        try (PreparedStatement insertOrderProductStmt = conn.prepareStatement(insertOrderProductQuery)) {
+          for (OrderProductDTO product : order.getOrderProducts()) {
+            insertOrderProductStmt.setInt(1, orderId);
+            insertOrderProductStmt.setInt(2, product.getProductId());
+            insertOrderProductStmt.setInt(3, product.getQuantity());
+            insertOrderProductStmt.addBatch();
+          }
+          insertOrderProductStmt.executeBatch();
+        }
+
+        return orderId;
       }
     }
     return -1; // Trả về -1 nếu thêm không thành công
-  }
-
-  // Thêm sản phẩm vào bảng order_products
-  public void addProductToOrder(int orderId, int productId, int quantity) throws SQLException {
-    String query = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)"; // Đổi id thành product_id
-    try (Connection conn = DBUtils.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(query)) {
-      pstmt.setInt(1, orderId);
-      pstmt.setInt(2, productId);
-      pstmt.setInt(3, quantity);
-      pstmt.executeUpdate();
-    }
   }
 
   // Xóa đơn hàng và các sản phẩm liên quan
@@ -103,8 +106,42 @@ public class OrderRepository {
     }
   }
 
+  // Xóa một sản phẩm cụ thể trong đơn hàng
+  public void deleteOrderProduct(int orderId, int productId) throws SQLException {
+    String query = "DELETE FROM order_products WHERE order_id = ? AND product_id = ?";
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+
+      statement.setInt(1, orderId);
+      statement.setInt(2, productId);
+      statement.executeUpdate();
+    }
+  }
+
   // Thêm sản phẩm vào đơn hàng (bảng order_products)
   public void addOrderProduct(int orderId, int productId, int quantity) throws SQLException {
+    String query = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)";
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+
+      statement.setInt(1, orderId);
+      statement.setInt(2, productId);
+      statement.setInt(3, quantity);
+      statement.executeUpdate();
+    }
+  }
+  public void updateOrderTotalAmount(int orderId, double totalAmount) throws SQLException {
+    String query = "UPDATE orders SET total_amount = ? WHERE id = ?";
+    try (Connection conn = DBUtils.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+      pstmt.setDouble(1, totalAmount);
+      pstmt.setInt(2, orderId);
+      pstmt.executeUpdate();
+    }
+  }
+  public void addProductToOrder(int orderId, int productId, int quantity) throws SQLException {
     String query = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)";
 
     try (Connection connection = DBUtils.getConnection();

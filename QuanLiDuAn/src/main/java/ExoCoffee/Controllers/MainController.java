@@ -23,6 +23,11 @@ public class MainController {
     openNewWindow("view_orders.fxml", "Xem đơn hàng");
   }
 
+  @FXML
+  private void handleViewCart() {
+    openNewWindow("cart_view.fxml", "Xem giỏ hàng");
+  }
+
   private void openNewWindow(String fxmlFile, String title) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ExoCoffee/FXML/" + fxmlFile));

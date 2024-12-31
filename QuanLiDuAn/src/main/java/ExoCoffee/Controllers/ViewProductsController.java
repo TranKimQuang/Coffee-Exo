@@ -20,58 +20,75 @@ import java.util.List;
 
 public class ViewProductsController {
   @FXML
-  private TableView<OrderDTO> orderTable;
+  private TableView<OrderProductDTO> orderTable; // Hiển thị chi tiết sản phẩm trong đơn hàng
   @FXML
-  private TableColumn<OrderDTO, Integer> orderIdColumn;
+  private TableColumn<OrderProductDTO, Integer> orderIdColumn; // Mã đơn hàng
   @FXML
-  private TableColumn<OrderDTO, String> productNameColumn;
+  private TableColumn<OrderProductDTO, Integer> productIdColumn; // Mã sản phẩm
   @FXML
-  private TableColumn<OrderDTO, Integer> quantityColumn;
+  private TableColumn<OrderProductDTO, Integer> quantityColumn; // Số lượng
   @FXML
-  private TableColumn<OrderDTO, Double> totalPriceColumn;
+  private TableColumn<OrderProductDTO, Double> totalPriceColumn; // Tổng giá
 
-  private ObservableList<OrderDTO> orderList = FXCollections.observableArrayList();
+  private ObservableList<OrderProductDTO> orderProductList = FXCollections.observableArrayList();
   private Cart cart = new Cart();
+  private OrderRepository orderRepository = new OrderRepository();
 
   @FXML
   public void initialize() {
+    // Liên kết cột với thuộc tính trong OrderProductDTO
     orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
-    productNameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+    productIdColumn.setCellValueFactory(new PropertyValueFactory<>("productId"));
     quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
     totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
 
-    orderTable.setItems(orderList);
+    // Tải dữ liệu đơn hàng vào TableView
+    orderTable.setItems(orderProductList);
     loadOrderData();
   }
 
+  /**
+   * Tải dữ liệu đơn hàng từ cơ sở dữ liệu.
+   */
   private void loadOrderData() {
-    OrderRepository orderRepository = new OrderRepository();
     try {
-      orderList.setAll(orderRepository.getAllOrders());
+      List<OrderDTO> orders = orderRepository.getAllOrders();
+      orderProductList.clear(); // Xóa dữ liệu cũ
+      for (OrderDTO order : orders) {
+        for (OrderProductDTO product : order.getOrderProducts()) {
+          orderProductList.add(product); // Thêm từng sản phẩm vào danh sách hiển thị
+        }
+      }
     } catch (SQLException e) {
       e.printStackTrace();
-      showError("Lỗi khi tải dữ liệu đơn hàng.");
+      showError("Lỗi khi tải dữ liệu đơn hàng: " + e.getMessage());
     }
   }
 
+  /**
+   * Xử lý sự kiện xóa đơn hàng.
+   */
   @FXML
   public void handleDeleteOrder() {
-    OrderDTO selectedOrder = orderTable.getSelectionModel().getSelectedItem();
-    if (selectedOrder != null) {
-      OrderRepository orderRepository = new OrderRepository();
-      try {
-        orderRepository.deleteOrder(selectedOrder.getOrderId());
-        loadOrderData(); // Tải lại dữ liệu sau khi xóa
-        showAlert("Thành công", "Đơn hàng đã được xóa.");
-      } catch (SQLException e) {
-        e.printStackTrace();
-        showError("Lỗi khi xóa đơn hàng.");
-      }
-    } else {
-      showError("Vui lòng chọn một đơn hàng để xóa.");
+    OrderProductDTO selectedProduct = orderTable.getSelectionModel().getSelectedItem();
+    if (selectedProduct == null) {
+      showError("Vui lòng chọn một sản phẩm trong đơn hàng để xóa.");
+      return;
+    }
+
+    try {
+      orderRepository.deleteOrderProduct(selectedProduct.getOrderId(), selectedProduct.getProductId());
+      orderProductList.remove(selectedProduct); // Cập nhật TableView mà không cần tải lại toàn bộ dữ liệu
+      showAlert("Thành công", "Sản phẩm đã được xóa khỏi đơn hàng.");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      showError("Lỗi khi xóa sản phẩm: " + e.getMessage());
     }
   }
 
+  /**
+   * Xử lý sự kiện thêm đơn hàng.
+   */
   @FXML
   public void handleAddOrder() {
     if (cart.getItems().isEmpty()) {
@@ -79,7 +96,9 @@ public class ViewProductsController {
       return;
     }
 
-    double totalAmount = cart.getItems().stream().mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity()).sum();
+    double totalAmount = cart.getItems().stream()
+        .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+        .sum();
     List<OrderProductDTO> orderProducts = new ArrayList<>();
     for (CartItem item : cart.getItems()) {
       orderProducts.add(new OrderProductDTO(item.getProduct().getProductId(), item.getQuantity()));
@@ -87,7 +106,6 @@ public class ViewProductsController {
 
     OrderDTO order = new OrderDTO(totalAmount, new Date(), orderProducts);
 
-    OrderRepository orderRepository = new OrderRepository();
     try {
       orderRepository.addOrder(order);
       cart.clear();
@@ -95,10 +113,16 @@ public class ViewProductsController {
       showAlert("Thành công", "Đơn hàng đã được thêm.");
     } catch (SQLException e) {
       e.printStackTrace();
-      showError("Lỗi khi thêm đơn hàng.");
+      showError("Lỗi khi thêm đơn hàng: " + e.getMessage());
     }
   }
 
+  /**
+   * Hiển thị thông báo.
+   *
+   * @param title   Tiêu đề thông báo.
+   * @param message Nội dung thông báo.
+   */
   private void showAlert(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle(title);
@@ -106,6 +130,11 @@ public class ViewProductsController {
     alert.showAndWait();
   }
 
+  /**
+   * Hiển thị thông báo lỗi.
+   *
+   * @param message Nội dung thông báo lỗi.
+   */
   private void showError(String message) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Lỗi");

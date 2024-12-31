@@ -1,51 +1,46 @@
 package ExoCoffee.Controllers;
 
-
+import ExoCoffee.Models.Cart;
 import ExoCoffee.Models.CartItem;
-import ExoCoffee.Models.ProductDTO;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-
-import java.util.List;
 
 public class CartViewController {
   @FXML
   private TableView<CartItem> cartTable;
   @FXML
-  private TableColumn<CartItem, Integer> productIdColumn;
-  @FXML
-  private TableColumn<CartItem, String> nameColumn;
+  private TableColumn<CartItem, String> productNameColumn;
   @FXML
   private TableColumn<CartItem, Integer> quantityColumn;
   @FXML
   private TableColumn<CartItem, Double> priceColumn;
   @FXML
-  private TableColumn<CartItem, Double> totalColumn;
+  private TableColumn<CartItem, Double> totalPriceColumn;
 
-  private List<CartItem> cartItems; // Danh sách sản phẩm trong giỏ hàng
+  private Cart cart; // Giỏ hàng
 
   @FXML
   public void initialize() {
-    // Liên kết cột với thuộc tính trong CartItemDTO
-    productIdColumn.setCellValueFactory(new PropertyValueFactory<>("productId"));
-    nameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+    // Liên kết cột với thuộc tính trong CartItem
+    productNameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
     quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
     priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-    totalColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+    totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
 
     // Tải dữ liệu giỏ hàng vào TableView
     loadCartData();
   }
 
   /**
-   * Thiết lập danh sách sản phẩm trong giỏ hàng.
+   * Thiết lập giỏ hàng.
    *
-   * @param cartItems Danh sách sản phẩm trong giỏ hàng.
+   * @param cart Giỏ hàng.
    */
-  public void setCartItems(List<CartItem> cartItems) {
-    this.cartItems = cartItems;
+  public void setCart(Cart cart) {
+    this.cart = cart;
     loadCartData();
   }
 
@@ -53,8 +48,8 @@ public class CartViewController {
    * Tải dữ liệu giỏ hàng vào TableView.
    */
   private void loadCartData() {
-    if (cartItems != null) {
-      cartTable.getItems().setAll(cartItems);
+    if (cart != null) {
+      cartTable.getItems().setAll(cart.getItems());
     }
   }
 
@@ -63,19 +58,28 @@ public class CartViewController {
    */
   @FXML
   public void handleCheckout() {
-    // Logic thanh toán
-    System.out.println("Thanh toán thành công!");
-    // Xóa giỏ hàng sau khi thanh toán
-    cartTable.getItems().clear();
+    if (cart.getItems().isEmpty()) {
+      showAlert("Giỏ hàng trống", "Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.");
+      return;
+    }
+
+    // Logic thanh toán (ví dụ: gọi API hoặc cập nhật cơ sở dữ liệu)
+    showAlert("Thành công", "Thanh toán thành công!");
+    cart.clear(); // Xóa giỏ hàng sau khi thanh toán
+    loadCartData(); // Cập nhật lại TableView
   }
 
   /**
-   * Xử lý sự kiện quay lại giao diện đặt hàng.
+   * Hiển thị thông báo.
+   *
+   * @param title   Tiêu đề thông báo.
+   * @param message Nội dung thông báo.
    */
-  @FXML
-  public void handleBack() {
-    // Quay lại giao diện đặt hàng
-    // Ví dụ: sử dụng Navigation để chuyển scene
-    System.out.println("Quay lại giao diện đặt hàng.");
+  private void showAlert(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 }

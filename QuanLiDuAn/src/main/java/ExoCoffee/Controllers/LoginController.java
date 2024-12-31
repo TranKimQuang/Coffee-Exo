@@ -53,7 +53,7 @@ public class LoginController {
       App.setRoot("admin");
     } else {
       // Chuyển hướng đến giao diện người dùng thông thường
-      App.setRoot("main");
+      App.setRoot("user");
     }
   }
 }

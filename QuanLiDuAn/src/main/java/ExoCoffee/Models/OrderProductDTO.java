@@ -3,6 +3,7 @@ package ExoCoffee.Models;
 public class OrderProductDTO {
   private int orderId; // ID của đơn hàng
   private int productId; // ID của sản phẩm
+
   private int quantity; // Số lượng
 
   // Constructors
