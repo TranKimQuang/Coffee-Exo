@@ -21,9 +21,9 @@ public class OrderRepository {
          ResultSet resultSet = statement.executeQuery()) {
 
       while (resultSet.next()) {
-        int orderId = resultSet.getInt("orderId");
-        double totalAmount = resultSet.getDouble("totalAmount");
-        Date orderDate = resultSet.getDate("orderDate");
+        int orderId = resultSet.getInt("id");
+        double totalAmount = resultSet.getDouble("total_amount");
+        Date orderDate = resultSet.getDate("order_date");
 
         // Lấy danh sách sản phẩm trong đơn hàng
         List<OrderProductDTO> orderProducts = getOrderProductsByOrderId(orderId);
@@ -38,28 +38,16 @@ public class OrderRepository {
   // Lấy danh sách sản phẩm trong đơn hàng
   private List<OrderProductDTO> getOrderProductsByOrderId(int orderId) throws SQLException {
     List<OrderProductDTO> orderProducts = new ArrayList<>();
-    String query = "SELECT op.productId, op.quantity, p.name, p.price, p.category " +
-        "FROM order_products op " +
-        "JOIN products p ON op.productId = p.productId " +
-        "WHERE op.orderId = ?";
-
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query)) {
-
-      statement.setInt(1, orderId);
-      try (ResultSet resultSet = statement.executeQuery()) {
-        while (resultSet.next()) {
-          int productId = resultSet.getInt("productId");
-          int quantity = resultSet.getInt("quantity");
-          String name = resultSet.getString("name");
-          double price = resultSet.getDouble("price");
-          String category = resultSet.getString("category");
-
-          // Tạo đối tượng ProductDTO
-          ProductDTO product = new ProductDTO(productId, name, price, category);
-
-          // Tạo đối tượng OrderProductDTO và thêm vào danh sách
-          orderProducts.add(new OrderProductDTO(orderId, product, quantity));
+    String query = "SELECT product_id, quantity FROM order_products WHERE order_id = ?"; // Đổi id thành product_id
+    try (Connection conn = DBUtils.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+      pstmt.setInt(1, orderId);
+      try (ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+          OrderProductDTO orderProduct = new OrderProductDTO();
+          orderProduct.setProductId(rs.getInt("product_id")); // Đổi id thành product_id
+          orderProduct.setQuantity(rs.getInt("quantity"));
+          orderProducts.add(orderProduct);
         }
       }
     }
@@ -68,48 +56,38 @@ public class OrderRepository {
 
   // Thêm đơn hàng mới
   public int addOrder(OrderDTO order) throws SQLException {
-    String query = "INSERT INTO orders (totalAmount, orderDate) VALUES (?, ?)";
-
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-      statement.setDouble(1, order.getTotalAmount());
-      statement.setDate(2, new java.sql.Date(order.getOrderDate().getTime()));
-      statement.executeUpdate();
+    String query = "INSERT INTO orders (total_amount, order_date) VALUES (?, ?)";
+    try (Connection conn = DBUtils.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+      pstmt.setDouble(1, order.getTotalAmount());
+      pstmt.setDate(2, new java.sql.Date(order.getOrderDate().getTime()));
+      pstmt.executeUpdate();
 
       // Lấy ID của đơn hàng vừa thêm
-      try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-        if (generatedKeys.next()) {
-          int orderId = generatedKeys.getInt(1);
-
-          // Thêm các sản phẩm vào bảng order_products
-          addOrderProducts(orderId, order.getOrderProducts());
-          return orderId;
-        }
+      ResultSet rs = pstmt.getGeneratedKeys();
+      if (rs.next()) {
+        return rs.getInt(1);
       }
     }
-    return -1; // Nếu không tạo được đơn hàng mới
+    return -1; // Trả về -1 nếu thêm không thành công
   }
 
   // Thêm sản phẩm vào bảng order_products
-  public void addOrderProducts(int orderId, List<OrderProductDTO> orderProducts) throws SQLException {
-    String query = "INSERT INTO order_products (orderId, productId, quantity) VALUES (?, ?, ?)";
-
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query)) {
-
-      for (OrderProductDTO orderProduct : orderProducts) {
-        statement.setInt(1, orderId);
-        statement.setInt(2, orderProduct.getProductId());
-        statement.setInt(3, orderProduct.getQuantity());
-        statement.addBatch();
-      }
-      statement.executeBatch();
+  public void addProductToOrder(int orderId, int productId, int quantity) throws SQLException {
+    String query = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)"; // Đổi id thành product_id
+    try (Connection conn = DBUtils.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+      pstmt.setInt(1, orderId);
+      pstmt.setInt(2, productId);
+      pstmt.setInt(3, quantity);
+      pstmt.executeUpdate();
     }
   }
+
+  // Xóa đơn hàng và các sản phẩm liên quan
   public void deleteOrder(int orderId) throws SQLException {
-    String deleteOrderProductsQuery = "DELETE FROM order_products WHERE orderId = ?";
-    String deleteOrderQuery = "DELETE FROM orders WHERE orderId = ?";
+    String deleteOrderProductsQuery = "DELETE FROM order_products WHERE order_id = ?";
+    String deleteOrderQuery = "DELETE FROM orders WHERE id = ?";
 
     try (Connection connection = DBUtils.getConnection();
          PreparedStatement deleteOrderProductsStmt = connection.prepareStatement(deleteOrderProductsQuery);
@@ -124,8 +102,10 @@ public class OrderRepository {
       deleteOrderStmt.executeUpdate();
     }
   }
+
+  // Thêm sản phẩm vào đơn hàng (bảng order_products)
   public void addOrderProduct(int orderId, int productId, int quantity) throws SQLException {
-    String query = "INSERT INTO order_products (orderId, productId, quantity) VALUES (?, ?, ?)";
+    String query = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)";
 
     try (Connection connection = DBUtils.getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
@@ -136,5 +116,4 @@ public class OrderRepository {
       statement.executeUpdate();
     }
   }
-
 }

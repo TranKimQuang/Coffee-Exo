@@ -82,7 +82,7 @@ public class ViewProductsController {
     double totalAmount = cart.getItems().stream().mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity()).sum();
     List<OrderProductDTO> orderProducts = new ArrayList<>();
     for (CartItem item : cart.getItems()) {
-      orderProducts.add(new OrderProductDTO(item.getProduct().getProductId(), item.getQuantity()));
+      orderProducts.add(new OrderProductDTO(item.getProduct().getId(), item.getQuantity()));
     }
 
     OrderDTO order = new OrderDTO(totalAmount, new Date(), orderProducts);
