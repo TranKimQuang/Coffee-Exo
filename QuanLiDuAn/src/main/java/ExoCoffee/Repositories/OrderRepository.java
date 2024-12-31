@@ -38,7 +38,7 @@ public class OrderRepository {
   // Lấy danh sách sản phẩm trong đơn hàng
   private List<OrderProductDTO> getOrderProductsByOrderId(int orderId) throws SQLException {
     List<OrderProductDTO> orderProducts = new ArrayList<>();
-    String query = "SELECT op.orderProductId, op.productId, op.quantity, p.name, p.price, p.category " +
+    String query = "SELECT op.productId, op.quantity, p.name, p.price, p.category " +
         "FROM order_products op " +
         "JOIN products p ON op.productId = p.productId " +
         "WHERE op.orderId = ?";
@@ -49,7 +49,6 @@ public class OrderRepository {
       statement.setInt(1, orderId);
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
-          int orderProductId = resultSet.getInt("orderProductId");
           int productId = resultSet.getInt("productId");
           int quantity = resultSet.getInt("quantity");
           String name = resultSet.getString("name");
@@ -60,7 +59,7 @@ public class OrderRepository {
           ProductDTO product = new ProductDTO(productId, name, price, category);
 
           // Tạo đối tượng OrderProductDTO và thêm vào danh sách
-          orderProducts.add(new OrderProductDTO(orderProductId, orderId, product, quantity));
+          orderProducts.add(new OrderProductDTO(orderId, product, quantity));
         }
       }
     }
@@ -78,17 +77,36 @@ public class OrderRepository {
       statement.setDate(2, new java.sql.Date(order.getOrderDate().getTime()));
       statement.executeUpdate();
 
-      // Lấy ID của đơn hàng vừa tạo
+      // Lấy ID của đơn hàng vừa thêm
       try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
         if (generatedKeys.next()) {
-          return generatedKeys.getInt(1);
+          int orderId = generatedKeys.getInt(1);
+
+          // Thêm các sản phẩm vào bảng order_products
+          addOrderProducts(orderId, order.getOrderProducts());
+          return orderId;
         }
       }
     }
     return -1; // Nếu không tạo được đơn hàng mới
   }
 
-  // Xóa đơn hàng
+  // Thêm sản phẩm vào bảng order_products
+  public void addOrderProducts(int orderId, List<OrderProductDTO> orderProducts) throws SQLException {
+    String query = "INSERT INTO order_products (orderId, productId, quantity) VALUES (?, ?, ?)";
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+
+      for (OrderProductDTO orderProduct : orderProducts) {
+        statement.setInt(1, orderId);
+        statement.setInt(2, orderProduct.getProductId());
+        statement.setInt(3, orderProduct.getQuantity());
+        statement.addBatch();
+      }
+      statement.executeBatch();
+    }
+  }
   public void deleteOrder(int orderId) throws SQLException {
     String deleteOrderProductsQuery = "DELETE FROM order_products WHERE orderId = ?";
     String deleteOrderQuery = "DELETE FROM orders WHERE orderId = ?";
@@ -106,4 +124,17 @@ public class OrderRepository {
       deleteOrderStmt.executeUpdate();
     }
   }
+  public void addOrderProduct(int orderId, int productId, int quantity) throws SQLException {
+    String query = "INSERT INTO order_products (orderId, productId, quantity) VALUES (?, ?, ?)";
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+
+      statement.setInt(1, orderId);
+      statement.setInt(2, productId);
+      statement.setInt(3, quantity);
+      statement.executeUpdate();
+    }
+  }
+
 }

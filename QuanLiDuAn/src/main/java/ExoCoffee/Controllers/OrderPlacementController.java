@@ -58,30 +58,6 @@ public class OrderPlacementController {
 
   @FXML
   public void handlePlaceOrder() {
-    ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
-    if (selectedProduct != null) {
-      cart.addItem(selectedProduct, 1);
-      showAlert("Thành công", "Đã thêm sản phẩm vào giỏ hàng: " + selectedProduct.getName());
-    } else {
-      showError("Vui lòng chọn một sản phẩm để đặt hàng.");
-    }
-  }
-  @FXML
-  public void handleViewOrders() {
-    try {
-      // Logic để xem đơn hàng
-      OrderRepository orderRepository = new OrderRepository();
-      List<OrderDTO> orders = orderRepository.getAllOrders();
-
-      // Hiển thị danh sách đơn hàng (ví dụ: trong một TableView hoặc cửa sổ mới)
-      showAlert("Thành công", "Đã tải danh sách đơn hàng. Số lượng đơn hàng: " + orders.size());
-    } catch (SQLException e) {
-      e.printStackTrace();
-      showError("Lỗi khi tải danh sách đơn hàng.");
-    }
-  }
-  @FXML
-  public void handleAddOrder() {
     if (cart.getItems().isEmpty()) {
       showError("Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
       return;
@@ -97,12 +73,27 @@ public class OrderPlacementController {
 
     OrderRepository orderRepository = new OrderRepository();
     try {
-      orderRepository.addOrder(order);
+      int orderId = orderRepository.addOrder(order);
+      showAlert("Thành công", "Đơn hàng đã được thêm. Mã đơn hàng: " + orderId);
       cart.clear();
-      showAlert("Thành công", "Đơn hàng đã được thêm.");
     } catch (SQLException e) {
       e.printStackTrace();
       showError("Lỗi khi thêm đơn hàng.");
+    }
+  }
+
+  @FXML
+  public void handleViewOrders() {
+    try {
+      // Logic để xem đơn hàng
+      OrderRepository orderRepository = new OrderRepository();
+      List<OrderDTO> orders = orderRepository.getAllOrders();
+
+      // Hiển thị danh sách đơn hàng (ví dụ: trong một TableView hoặc cửa sổ mới)
+      showAlert("Thành công", "Đã tải danh sách đơn hàng. Số lượng đơn hàng: " + orders.size());
+    } catch (SQLException e) {
+      e.printStackTrace();
+      showError("Lỗi khi tải danh sách đơn hàng.");
     }
   }
 

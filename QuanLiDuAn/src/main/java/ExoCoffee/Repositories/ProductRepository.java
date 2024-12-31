@@ -22,7 +22,7 @@ public class ProductRepository {
          ResultSet resultSet = statement.executeQuery()) {
       while (resultSet.next()) {
         ProductDTO productDTO = new ProductDTO(
-            resultSet.getInt("productId"),
+            resultSet.getInt("id"),
             resultSet.getString("name"),
                     resultSet.getDouble("price"),
                     resultSet.getString("category")
@@ -34,7 +34,7 @@ public class ProductRepository {
   }
 
   public void addProduct(ProductDTO productDTO) throws SQLException {
-    String query = "INSERT INTO products (name, productId, price, category) VALUES (?, ?, ?, ?)";
+    String query = "INSERT INTO products (name, id, price, category) VALUES (?, ?, ?, ?)";
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, productDTO.getName());
@@ -46,7 +46,7 @@ public class ProductRepository {
   }
 
   public void updateProduct(ProductDTO productDTO) throws SQLException {
-    String query = "UPDATE products SET price = ?, category = ? WHERE productId = ?";
+    String query = "UPDATE products SET price = ?, category = ? WHERE id = ?";
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setDouble(1, productDTO.getPrice());
@@ -57,7 +57,7 @@ public class ProductRepository {
   }
 
   public void deleteProduct(int productId) throws SQLException {
-    String query = "DELETE FROM products WHERE productId = ?";
+    String query = "DELETE FROM products WHERE id = ?";
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setInt(1, productId);
