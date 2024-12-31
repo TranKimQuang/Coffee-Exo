@@ -97,7 +97,7 @@ public class OrderPlacementController {
     OrderRepository orderRepository = new OrderRepository();
     try {
       for (CartItem item : cart.getItems()) {
-        orderRepository.addProductToOrder(currentOrder.getOrderId(), item.getProduct().getId(), item.getQuantity());
+        orderRepository.addProductToOrder(currentOrder.getOrderId(), item.getProduct().getProductId(), item.getQuantity());
       }
       showAlert("Thành công", "Sản phẩm đã được thêm vào đơn hàng.");
       cart.clear(); // Xóa giỏ hàng sau khi thêm thành công

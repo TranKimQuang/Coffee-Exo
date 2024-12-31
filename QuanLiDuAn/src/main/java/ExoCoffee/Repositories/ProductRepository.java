@@ -24,7 +24,7 @@ public class ProductRepository {
          ResultSet rs = pstmt.executeQuery()) {
       while (rs.next()) {
         ProductDTO product = new ProductDTO();
-        product.setId(rs.getInt("product_id")); // Đổi id thành product_id
+        product.setProductId(rs.getInt("product_id")); // Đổi id thành product_id
         product.setName(rs.getString("name"));
         product.setPrice(rs.getDouble("price"));
         product.setCategory(rs.getString("category"));
@@ -39,7 +39,7 @@ public class ProductRepository {
     try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, productDTO.getName());
-      statement.setInt(2, productDTO.getId());
+      statement.setInt(2, productDTO.getProductId());
       statement.setDouble(3, productDTO.getPrice());
       statement.setString(4, productDTO.getCategory());
       statement.executeUpdate();
@@ -52,7 +52,7 @@ public class ProductRepository {
          PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setDouble(1, productDTO.getPrice());
       statement.setString(2, productDTO.getCategory());
-      statement.setInt(3, productDTO.getId());
+      statement.setInt(3, productDTO.getProductId());
       statement.executeUpdate();
     }
   }

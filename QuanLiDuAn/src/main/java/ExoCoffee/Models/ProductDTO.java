@@ -1,7 +1,7 @@
 package ExoCoffee.Models;
 
 public class ProductDTO {
-  private int id; // Thuộc tính id
+  private int productId;
   private String name;
   private double price;
   private String category;
@@ -9,20 +9,20 @@ public class ProductDTO {
   // Constructors
   public ProductDTO() {}
 
-  public ProductDTO(int id, String name, double price, String category) {
-    this.id = id;
+  public ProductDTO(int productId, String name, double price, String category) {
+    this.productId = productId;
     this.name = name;
     this.price = price;
     this.category = category;
   }
 
   // Getters và Setters
-  public int getId() { // Phương thức getter cho id
-    return id;
+  public int getProductId() { // Đổi từ getId thành getProductId
+    return productId;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setProductId(int productId) { // Đổi từ setId thành setProductId
+    this.productId = productId;
   }
 
   public String getName() {

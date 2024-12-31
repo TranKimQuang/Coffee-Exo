@@ -2,37 +2,35 @@ package ExoCoffee.Models;
 
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 public class OrderDTO {
-  private int orderId; // ID của đơn hàng
-  private double totalAmount; // Tổng số tiền của đơn hàng
-  private Date orderDate; // Ngày đặt hàng
-  private List<OrderProductDTO> orderProducts; // Danh sách sản phẩm trong đơn hàng
+  private int orderId;
+  private double totalAmount;
+  private Date orderDate;
+  private List<OrderProductDTO> orderProducts;
+  private String productName;  // Thêm thuộc tính này
+  private int quantity;  // Thêm thuộc tính này
 
   // Constructors
-  public OrderDTO() {
-    this.orderProducts = new ArrayList<>(); // Khởi tạo danh sách sản phẩm trống
-  }
-
   public OrderDTO(int orderId, double totalAmount, Date orderDate, List<OrderProductDTO> orderProducts) {
     this.orderId = orderId;
     this.totalAmount = totalAmount;
     this.orderDate = orderDate;
-    this.orderProducts = orderProducts != null ? orderProducts : new ArrayList<>();
+    this.orderProducts = orderProducts;
   }
 
   public OrderDTO(double totalAmount, Date orderDate, List<OrderProductDTO> orderProducts) {
     this.totalAmount = totalAmount;
     this.orderDate = orderDate;
-    this.orderProducts = orderProducts != null ? orderProducts : new ArrayList<>();
+    this.orderProducts = orderProducts;
   }
 
-  public OrderDTO(int orderId, double totalAmount, Date orderDate) {
+  // Thêm constructor mới
+  public OrderDTO(int orderId, String productName, int quantity, double totalPrice) {
     this.orderId = orderId;
-    this.totalAmount = totalAmount;
-    this.orderDate = orderDate;
-    this.orderProducts = new ArrayList<>();
+    this.productName = productName;
+    this.quantity = quantity;
+    this.totalAmount = totalPrice;
   }
 
   // Getters and setters
@@ -65,44 +63,28 @@ public class OrderDTO {
   }
 
   public void setOrderProducts(List<OrderProductDTO> orderProducts) {
-    this.orderProducts = orderProducts != null ? orderProducts : new ArrayList<>();
+    this.orderProducts = orderProducts;
   }
 
-  // Phương thức thêm sản phẩm vào đơn hàng
-  public void addOrderProduct(OrderProductDTO orderProduct) {
-    if (orderProduct != null) {
-      this.orderProducts.add(orderProduct);
-    }
+  // Thêm phương thức getter và setter cho thuộc tính mới
+  public String getProductName() {
+    return productName;
   }
 
-  // Phương thức tính tổng giá trị đơn hàng
-  public double calculateTotalAmount(List<ProductDTO> products) {
-    if (orderProducts == null || orderProducts.isEmpty() || products == null) {
-      return 0.0;
-    }
-
-    return orderProducts.stream()
-        .mapToDouble(op -> {
-          // Tìm sản phẩm dựa trên productId
-          ProductDTO product = products.stream()
-              .filter(p -> p.getId() == op.getProductId())
-              .findFirst()
-              .orElse(null);
-
-          // Tính tổng giá trị nếu sản phẩm tồn tại
-          return (product != null) ? product.getPrice() * op.getQuantity() : 0.0;
-        })
-        .sum();
+  public void setProductName(String productName) {
+    this.productName = productName;
   }
 
-  // Phương thức toString để hiển thị thông tin đơn hàng
-  @Override
-  public String toString() {
-    return "OrderDTO{" +
-        "orderId=" + orderId +
-        ", totalAmount=" + totalAmount +
-        ", orderDate=" + orderDate +
-        ", orderProducts=" + orderProducts +
-        '}';
+  public int getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
+
+  // Thêm phương thức getTotalPrice
+  public double getTotalPrice() {
+    return this.totalAmount;
   }
 }

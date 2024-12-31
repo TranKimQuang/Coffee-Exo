@@ -71,7 +71,7 @@ public class ProductManagementController {
 
   private void loadProductDetails(ProductDTO product) {
     if (product != null) {
-      productIdField.setText(String.valueOf(product.getId()));
+      productIdField.setText(String.valueOf(product.getProductId()));
       nameField.setText(product.getName());
       priceField.setText(String.valueOf(product.getPrice()));
       categoryField.setText(product.getCategory());
@@ -120,7 +120,7 @@ public class ProductManagementController {
   private void handleDeleteProduct() {
     ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
     if (selectedProduct != null) {
-      int productId = selectedProduct.getId();
+      int productId = selectedProduct.getProductId();
       ProductRepository productRepository = new ProductRepository();
       try {
         productRepository.deleteProduct(productId);

@@ -7,17 +7,18 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.OrderPlacementController" spacing="10" padding="10">
-    <TableView fx:id="productTable">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.CartViewController" spacing="10" padding="10">
+    <TableView fx:id="cartTable">
         <columns>
             <TableColumn fx:id="productIdColumn" text="Mã SP"/>
             <TableColumn fx:id="nameColumn" text="Tên SP"/>
+            <TableColumn fx:id="quantityColumn" text="Số lượng"/>
             <TableColumn fx:id="priceColumn" text="Giá"/>
-            <TableColumn fx:id="categoryColumn" text="Danh mục"/>
+            <TableColumn fx:id="totalColumn" text="Tổng tiền"/>
         </columns>
     </TableView>
     <HBox spacing="10">
-        <Button text="Đặt hàng" onAction="#handlePlaceOrder"/>
-        <Button text="Xem giỏ hàng" onAction="#handleViewCart"/>
+        <Button text="Thanh toán" onAction="#handleCheckout"/>
+        <Button text="Quay lại" onAction="#handleBack"/>
     </HBox>
 </VBox>
