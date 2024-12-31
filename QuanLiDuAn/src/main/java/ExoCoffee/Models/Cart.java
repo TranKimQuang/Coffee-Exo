@@ -6,12 +6,10 @@ import javafx.collections.ObservableList;
 public class Cart {
   private ObservableList<CartItem> items = FXCollections.observableArrayList();
 
-  /**
-   * Thêm sản phẩm vào giỏ hàng.
-   *
-   * @param product  Sản phẩm cần thêm.
-   * @param quantity Số lượng sản phẩm.
-   */
+  public ObservableList<CartItem> getItems() {
+    return items;
+  }
+
   public void addItem(ProductDTO product, int quantity) {
     if (product == null) {
       throw new IllegalArgumentException("Sản phẩm không được để trống.");
@@ -31,22 +29,10 @@ public class Cart {
     }
 
     // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
-    items.add(new CartItem(product, quantity));
+    items.add(new CartItem(product, quantity)); // Sử dụng constructor với 2 tham số
   }
 
-  /**
-   * Xóa tất cả sản phẩm trong giỏ hàng.
-   */
   public void clear() {
     items.clear();
-  }
-
-  /**
-   * Lấy danh sách sản phẩm trong giỏ hàng.
-   *
-   * @return Danh sách sản phẩm.
-   */
-  public ObservableList<CartItem> getItems() {
-    return items;
   }
 }

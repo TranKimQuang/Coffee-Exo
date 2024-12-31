@@ -3,20 +3,23 @@ package ExoCoffee.Models;
 public class CartItem {
   private ProductDTO product;
   private int quantity;
-  private double totalPrice; // Thêm thuộc tính totalPrice
+  private double totalPrice;
 
+  // Constructor với 2 tham số (ProductDTO và int)
   public CartItem(ProductDTO product, int quantity) {
     this.product = product;
     this.quantity = quantity;
-    this.totalPrice = product.getPrice() * quantity;
+    this.totalPrice = product.getPrice() * quantity; // Tính toán totalPrice
   }
 
+  // Constructor với 3 tham số (ProductDTO, int, và double)
   public CartItem(ProductDTO product, int quantity, double totalPrice) {
     this.product = product;
     this.quantity = quantity;
     this.totalPrice = totalPrice;
   }
 
+  // Các phương thức getter và setter
   public ProductDTO getProduct() {
     return product;
   }
@@ -42,10 +45,10 @@ public class CartItem {
   }
 
   public String getProductName() {
-    return product.getName();
+    return product != null ? product.getName() : "";
   }
 
   public double getPrice() {
-    return product.getPrice();
+    return product != null ? product.getPrice() : 0.0;
   }
 }

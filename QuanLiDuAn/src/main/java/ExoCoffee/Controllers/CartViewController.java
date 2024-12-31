@@ -5,12 +5,14 @@ import ExoCoffee.Models.CartItem;
 import ExoCoffee.Repositories.OrderRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 public class CartViewController {
   @FXML
@@ -23,8 +25,11 @@ public class CartViewController {
   private TableColumn<CartItem, Double> priceColumn;
   @FXML
   private TableColumn<CartItem, Double> totalPriceColumn;
+  @FXML
+  private Label totalAmountLabel; // Label để hiển thị tổng tiền
 
-  private Cart cart; // Giỏ hàng
+  private OrderRepository orderRepository = new OrderRepository();
+  private Cart cart = new Cart(); // Khởi tạo giỏ hàng
 
   @FXML
   public void initialize() {
@@ -51,26 +56,42 @@ public class CartViewController {
   /**
    * Tải dữ liệu giỏ hàng vào TableView.
    */
-  private void loadCartData() {
+  public void loadCartData() {
     if (cart != null) {
-      cartTable.setItems(cart.getItems()); // Sử dụng setItems thay vì setAll
+      try {
+        // Lấy dữ liệu từ database (ví dụ: orderId = 1)
+        int orderId = 1; // Thay bằng orderId thực tế
+        List<CartItem> items = orderRepository.getOrderProducts(orderId);
+        cart.getItems().setAll(items); // Cập nhật dữ liệu vào ObservableList
+        cartTable.setItems(cart.getItems()); // Thiết lập dữ liệu cho TableView
+        updateTotalAmount(); // Cập nhật tổng tiền
+      } catch (SQLException e) {
+        e.printStackTrace();
+        showAlert("Lỗi", "Không thể tải dữ liệu giỏ hàng từ database.");
+      }
     }
   }
 
   /**
-   * Xử lý sự kiện thanh toán.
+   * Cập nhật tổng tiền và hiển thị.
    */
-  /**
-   * Xử lý sự kiện đặt hàng.
-   */
+  private void updateTotalAmount() {
+    if (totalAmountLabel != null) {
+      double totalAmount = cart.getItems().stream()
+          .mapToDouble(CartItem::getTotalPrice)
+          .sum();
+      totalAmountLabel.setText(String.format("Tổng tiền: %.2f", totalAmount));
+    } else {
+      System.err.println("totalAmountLabel chưa được khởi tạo.");
+    }
+  }
+
   @FXML
   public void handlePlaceOrder() {
     if (cart.getItems().isEmpty()) {
-      showAlert("Cảnh báo","Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
+      showAlert("Cảnh báo", "Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
       return;
     }
-
-    OrderRepository orderRepository = new OrderRepository();
 
     try {
       // Bước 1: Tạo đơn hàng mới
@@ -86,11 +107,13 @@ public class CartViewController {
 
       showAlert("Thành công", "Đơn hàng đã được đặt thành công.");
       cart.clear(); // Xóa giỏ hàng sau khi đặt hàng thành công
+      loadCartData(); // Cập nhật lại TableView
     } catch (SQLException e) {
       e.printStackTrace();
-      showAlert("Cảnh báo","Lỗi khi đặt hàng: " + e.getMessage());
+      showAlert("Cảnh báo", "Lỗi khi đặt hàng: " + e.getMessage());
     }
   }
+
   /**
    * Hiển thị thông báo.
    *

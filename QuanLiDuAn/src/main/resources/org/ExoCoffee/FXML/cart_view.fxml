@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
@@ -19,6 +20,9 @@
                 <TableColumn fx:id="totalPriceColumn" text="Tổng tiền" />
             </columns>
         </TableView>
+
+        <!-- Thêm Label để hiển thị tổng tiền -->
+        <Label fx:id="totalAmountLabel" text="Tổng tiền: 0.0" />
 
         <Button text="Thanh toán" onAction="#handlePlaceOrder" />
     </children>

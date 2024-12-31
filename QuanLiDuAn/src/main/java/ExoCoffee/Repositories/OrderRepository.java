@@ -171,28 +171,28 @@ public class OrderRepository {
    * @return Danh sách CartItem.
    * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
    */
-  public List<CartItem> getOrderProducts() throws SQLException {
+  public List<CartItem> getOrderProducts(int orderId) throws SQLException {
     List<CartItem> cartItems = new ArrayList<>();
-    String query = "SELECT op.order_id, op.product_id, op.quantity, p.name AS productName, p.price " +
+    String query = "SELECT op.order_id, op.product_id, op.quantity, p.name AS product_name, p.price " +
         "FROM order_products op " +
-        "JOIN products p ON op.product_id = p.product_id";
+        "JOIN products p ON op.product_id = p.product_id " +
+        "WHERE op.order_id = ?";
 
     try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query);
-         ResultSet resultSet = statement.executeQuery()) {
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, orderId);
+      ResultSet resultSet = statement.executeQuery();
 
       while (resultSet.next()) {
-        int orderId = resultSet.getInt("order_id");
         int productId = resultSet.getInt("product_id");
         int quantity = resultSet.getInt("quantity");
-        String productName = resultSet.getString("productName");
+        String productName = resultSet.getString("product_name");
         double price = resultSet.getDouble("price");
-        String category = resultSet.getString("category");
+        String category =resultSet.getString("category");
         double totalPrice = price * quantity;
 
         ProductDTO product = new ProductDTO(productId, productName, price, category);
-        CartItem cartItem = new CartItem(product, quantity, totalPrice);
-
+        CartItem cartItem = new CartItem(product, quantity,totalPrice);
         cartItems.add(cartItem);
       }
     } catch (SQLException e) {

@@ -10,13 +10,5 @@ public class CartManager {
     return cart;
   }
 
-  // Phương thức để xóa giỏ hàng (nếu cần)
-  public static void clearCart() {
-    cart.clear();
-  }
 
-  // Phương thức để thêm sản phẩm vào giỏ hàng (nếu cần)
-  public static void addItemToCart(ProductDTO product, int quantity) {
-    cart.addItem(product, quantity);
-  }
 }

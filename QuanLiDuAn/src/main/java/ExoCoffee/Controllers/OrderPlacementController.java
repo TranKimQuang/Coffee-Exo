@@ -73,6 +73,21 @@ public class OrderPlacementController {
     // Thêm sản phẩm vào giỏ hàng với số lượng mặc định là 1
     cart.addItem(selectedProduct, 1);
     showAlert("Thành công", "Sản phẩm đã được thêm vào giỏ hàng.");
+
+    // Tạo đơn hàng mới và lấy order_id
+    try {
+      OrderRepository orderRepository = new OrderRepository();
+      double totalAmount = selectedProduct.getPrice() * 1; // Tính tổng tiền
+      int orderId = orderRepository.addOrder(totalAmount, new Date()); // Tạo đơn hàng mới
+      System.out.println("Đã tạo đơn hàng mới với orderId: " + orderId);
+
+      // Thêm sản phẩm vào bảng order_products
+      orderRepository.addProductToOrder(orderId, selectedProduct.getProductId(), 1);
+      System.out.println("Đã thêm sản phẩm vào bảng order_products.");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      showError("Lỗi khi thêm sản phẩm vào đơn hàng: " + e.getMessage());
+    }
   }
 
 
