@@ -87,7 +87,7 @@ public class ProductManagementController {
     double price = Double.parseDouble(priceField.getText());
     String category = categoryField.getText();
 
-    ProductDTO productDTO = new ProductDTO(name, productId, price, category);
+    ProductDTO productDTO = new ProductDTO(productId, name, price, category);
     ProductRepository productRepository = new ProductRepository();
     try {
       productRepository.addProduct(productDTO);
@@ -105,7 +105,7 @@ public class ProductManagementController {
     double price = Double.parseDouble(priceField.getText());
     String category = categoryField.getText();
 
-    ProductDTO productDTO = new ProductDTO(name, productId, price, category);
+    ProductDTO productDTO = new ProductDTO(productId, name, price, category);
     ProductRepository productRepository = new ProductRepository();
     try {
       productRepository.updateProduct(productDTO);

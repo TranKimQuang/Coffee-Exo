@@ -5,26 +5,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.event.ActionEvent;
-import java.io.IOException;
 
 public class MainController {
 
   @FXML
-  private void handleViewProducts(ActionEvent event) {
-    openNewWindow("view_products.fxml", "View Products");
+  private void handleViewProducts() {
+    openNewWindow("view_products.fxml", "Xem sản phẩm");
   }
 
   @FXML
-  private void handlePlaceOrder(ActionEvent event) {
-    openNewWindow("order_placement.fxml", "Place Order");
+  private void handlePlaceOrder() {
+    openNewWindow("order_placement.fxml", "Đặt hàng");
   }
 
   @FXML
-  private void handleViewOrders(ActionEvent event) {
-    openNewWindow("view_orders.fxml", "View Orders");
+  private void handleViewOrders() {
+    openNewWindow("view_orders.fxml", "Xem đơn hàng");
   }
 
   private void openNewWindow(String fxmlFile, String title) {
@@ -36,17 +32,8 @@ public class MainController {
       stage.setTitle(title);
       stage.setScene(new Scene(root));
       stage.show();
-    } catch (IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
-      showError("Không thể tải giao diện: " + fxmlFile);
     }
-  }
-
-  private void showError(String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle("Lỗi");
-    alert.setContentText(message);
-    alert.showAndWait();
-    System.err.println(message);
   }
 }

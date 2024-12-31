@@ -9,7 +9,7 @@ public class UserRepository {
 
   // Lấy thông tin người dùng bằng tên đăng nhập
   public UserDTO getUserByUsername(String username) throws SQLException {
-    String query = "SELECT * FROM user WHERE username = ?";
+    String query = "SELECT * FROM users WHERE username = ?";
 
     try (Connection connection = DBUtils.getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {

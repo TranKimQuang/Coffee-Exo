@@ -1,33 +1,67 @@
 package ExoCoffee.Repositories;
 
 import ExoCoffee.Models.ProductDTO;
-import ExoCoffee.Utils.DBUtils;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductRepository {
+  private Connection getConnection() throws SQLException {
+    // Kết nối đến cơ sở dữ liệu
+    String url = "jdbc:mysql://localhost:3306/coffeemanager";
+    String user = "root";
+    String password = "";
+    return DriverManager.getConnection(url, user, password);
+  }
 
-  // Lấy tất cả sản phẩm
   public List<ProductDTO> getAllProducts() throws SQLException {
-    List<ProductDTO> products = new ArrayList<>();
     String query = "SELECT * FROM products";
-
-    try (Connection connection = DBUtils.getConnection();
+    List<ProductDTO> productDTOS = new ArrayList<>();
+    try (Connection connection = getConnection();
          PreparedStatement statement = connection.prepareStatement(query);
          ResultSet resultSet = statement.executeQuery()) {
-
       while (resultSet.next()) {
-        int productId = resultSet.getInt("productId");
-        String name = resultSet.getString("name");
-        double price = resultSet.getDouble("price");
-        String category = resultSet.getString("category");
-
-        // Tạo đối tượng ProductDTO và thêm vào danh sách
-        products.add(new ProductDTO(productId, name, price, category));
+        ProductDTO productDTO = new ProductDTO(
+            resultSet.getInt("productId"),
+            resultSet.getString("name"),
+                    resultSet.getDouble("price"),
+                    resultSet.getString("category")
+                );
+        productDTOS.add(productDTO);
       }
     }
-    return products;
+    return productDTOS;
+  }
+
+  public void addProduct(ProductDTO productDTO) throws SQLException {
+    String query = "INSERT INTO products (name, productId, price, category) VALUES (?, ?, ?, ?)";
+    try (Connection connection = getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setString(1, productDTO.getName());
+      statement.setInt(2, productDTO.getProductId());
+      statement.setDouble(3, productDTO.getPrice());
+      statement.setString(4, productDTO.getCategory());
+      statement.executeUpdate();
+    }
+  }
+
+  public void updateProduct(ProductDTO productDTO) throws SQLException {
+    String query = "UPDATE products SET price = ?, category = ? WHERE productId = ?";
+    try (Connection connection = getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setDouble(1, productDTO.getPrice());
+      statement.setString(2, productDTO.getCategory());
+      statement.setInt(3, productDTO.getProductId());
+      statement.executeUpdate();
+    }
+  }
+
+  public void deleteProduct(int productId) throws SQLException {
+    String query = "DELETE FROM products WHERE productId = ?";
+    try (Connection connection = getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, productId);
+      statement.executeUpdate();
+    }
   }
 }
