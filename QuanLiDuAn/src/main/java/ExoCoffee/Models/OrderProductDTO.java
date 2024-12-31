@@ -1,23 +1,22 @@
 package ExoCoffee.Models;
 
 public class OrderProductDTO {
-  private int orderProductId;
-  private int orderId;
-  private int productId;
-  private int quantity;
+  private int orderProductId; // ID của sản phẩm trong đơn hàng
+  private int orderId; // ID của đơn hàng
+  private ProductDTO product; // Thông tin sản phẩm
+  private int quantity; // Số lượng sản phẩm
 
   // Constructors
-  public OrderProductDTO() {}
-
-  public OrderProductDTO(int orderProductId, int orderId, int productId, int quantity) {
+  public OrderProductDTO(int orderProductId, int orderId, ProductDTO product, int quantity) {
     this.orderProductId = orderProductId;
     this.orderId = orderId;
-    this.productId = productId;
+    this.product = product;
     this.quantity = quantity;
   }
 
-  public OrderProductDTO(int productId, int quantity) {
-    this.productId = productId;
+  public OrderProductDTO(int orderId, ProductDTO product, int quantity) {
+    this.orderId = orderId;
+    this.product = product;
     this.quantity = quantity;
   }
 
@@ -38,12 +37,12 @@ public class OrderProductDTO {
     this.orderId = orderId;
   }
 
-  public int getProductId() {
-    return productId;
+  public ProductDTO getProduct() {
+    return product;
   }
 
-  public void setProductId(int productId) {
-    this.productId = productId;
+  public void setProduct(ProductDTO product) {
+    this.product = product;
   }
 
   public int getQuantity() {

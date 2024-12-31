@@ -1,17 +1,27 @@
 package ExoCoffee.Models;
 
 public class UserDTO {
-  private String username;
-  private String password;
-  private String role;
+  private int userId; // ID của người dùng
+  private String username; // Tên đăng nhập
+  private String password; // Mật khẩu
+  private String role; // Vai trò (ví dụ: admin, user)
 
-  public UserDTO(String username, String password, String role) {
+  // Constructors
+  public UserDTO(int userId, String username, String password, String role) {
+    this.userId = userId;
     this.username = username;
     this.password = password;
     this.role = role;
   }
 
-  // Getters và Setters
+  // Getters and setters
+  public int getUserId() {
+    return userId;
+  }
+
+  public void setUserId(int userId) {
+    this.userId = userId;
+  }
 
   public String getUsername() {
     return username;
@@ -35,9 +45,5 @@ public class UserDTO {
 
   public void setRole(String role) {
     this.role = role;
-  }
-
-  public boolean hasRole(String role) {
-    return this.role.equals(role);
   }
 }

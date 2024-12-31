@@ -4,12 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderDTO {
-  private int orderId;
-  private double totalAmount;
-  private Date orderDate;
-  private List<OrderProductDTO> orderProducts;
-  private String productName;  // Thêm thuộc tính này
-  private int quantity;  // Thêm thuộc tính này
+  private int orderId; // ID của đơn hàng
+  private double totalAmount; // Tổng số tiền của đơn hàng
+  private Date orderDate; // Ngày đặt hàng
+  private List<OrderProductDTO> orderProducts; // Danh sách sản phẩm trong đơn hàng
 
   // Constructors
   public OrderDTO(int orderId, double totalAmount, Date orderDate, List<OrderProductDTO> orderProducts) {
@@ -25,12 +23,10 @@ public class OrderDTO {
     this.orderProducts = orderProducts;
   }
 
-  // Thêm constructor mới
-  public OrderDTO(int orderId, String productName, int quantity, double totalPrice) {
+  public OrderDTO(int orderId, double totalAmount, Date orderDate) {
     this.orderId = orderId;
-    this.productName = productName;
-    this.quantity = quantity;
-    this.totalAmount = totalPrice;
+    this.totalAmount = totalAmount;
+    this.orderDate = orderDate;
   }
 
   // Getters and setters
@@ -66,25 +62,18 @@ public class OrderDTO {
     this.orderProducts = orderProducts;
   }
 
-  // Thêm phương thức getter và setter cho thuộc tính mới
-  public String getProductName() {
-    return productName;
+  // Phương thức thêm sản phẩm vào đơn hàng
+  public void addOrderProduct(OrderProductDTO orderProduct) {
+    this.orderProducts.add(orderProduct);
   }
 
-  public void setProductName(String productName) {
-    this.productName = productName;
-  }
-
-  public int getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
-
-  // Thêm phương thức getTotalPrice
-  public double getTotalPrice() {
-    return this.totalAmount;
+  // Phương thức tính tổng giá trị đơn hàng
+  public double calculateTotalAmount() {
+    if (orderProducts == null || orderProducts.isEmpty()) {
+      return 0.0;
+    }
+    return orderProducts.stream()
+        .mapToDouble(op -> op.getProduct().getPrice() * op.getQuantity())
+        .sum();
   }
 }

@@ -1,18 +1,20 @@
 package ExoCoffee.Models;
 
 public class ProductDTO {
-  private int productId;
-  private String name;
-  private double price;
-  private String category;
+  private int productId; // ID của sản phẩm
+  private String name; // Tên sản phẩm
+  private double price; // Giá sản phẩm
+  private String category; // Danh mục sản phẩm
 
-  public ProductDTO(String name, int productId, double price, String category) {
-    this.name = name;
+  // Constructors
+  public ProductDTO(int productId, String name, double price, String category) {
     this.productId = productId;
+    this.name = name;
     this.price = price;
     this.category = category;
   }
 
+  // Getters and setters
   public int getProductId() {
     return productId;
   }
