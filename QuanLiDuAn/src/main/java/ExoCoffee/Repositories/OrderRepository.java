@@ -83,8 +83,10 @@ public class OrderRepository {
    * @param quantity  Số lượng sản phẩm.
    * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
    */
-  public void addProductToOrder(int orderId, int productId, int quantity) throws SQLException {
-    String query = "INSERT INTO order_products (order_id, product_id, quantity) VALUES (?, ?, ?)";
+  public void addProductToOrder(int orderId, int productId, int quantity, double price) throws SQLException {
+    double totalProduct = price * quantity; // Tính tổng giá trị của sản phẩm
+
+    String query = "INSERT INTO order_products (order_id, product_id, quantity, price, total_product) VALUES (?, ?, ?, ?, ?)";
 
     try (Connection connection = DBUtils.getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
@@ -92,11 +94,9 @@ public class OrderRepository {
       statement.setInt(1, orderId);
       statement.setInt(2, productId);
       statement.setInt(3, quantity);
+      statement.setDouble(4, price);
+      statement.setDouble(5, totalProduct);
       statement.executeUpdate();
-      System.out.println("Product added to order: " + productId + " in order: " + orderId); // Debug log
-    } catch (SQLException e) {
-      e.printStackTrace();
-      throw new SQLException("Lỗi khi thêm sản phẩm vào đơn hàng.", e);
     }
   }
 

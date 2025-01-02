@@ -2,6 +2,7 @@ package ExoCoffee.Controllers;
 
 import ExoCoffee.Models.Cart;
 import ExoCoffee.Models.CartItem;
+import ExoCoffee.Models.OrderProductDTO;
 import ExoCoffee.Repositories.OrderRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -56,19 +57,13 @@ public class CartViewController {
   /**
    * Tải dữ liệu giỏ hàng vào TableView.
    */
-  public void loadCartData() {
-    if (cart != null) {
-      try {
-        // Lấy dữ liệu từ database (ví dụ: orderId = 1)
-        int orderId = 1; // Thay bằng orderId thực tế
-        List<CartItem> items = orderRepository.getOrderProducts(orderId);
-        cart.getItems().setAll(items); // Cập nhật dữ liệu vào ObservableList
-        cartTable.setItems(cart.getItems()); // Thiết lập dữ liệu cho TableView
-        updateTotalAmount(); // Cập nhật tổng tiền
-      } catch (SQLException e) {
-        e.printStackTrace();
-        showAlert("Lỗi", "Không thể tải dữ liệu giỏ hàng từ database.");
-      }
+  private void loadCartData() {
+    try {
+      List<OrderProductDTO> orderProducts = orderRepository.getOrderProducts();
+      cartTable.getItems().setAll(orderProducts);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      showAlert("Lỗi","Lỗi khi tải giỏ hàng: " + e.getMessage());
     }
   }
 
@@ -102,7 +97,7 @@ public class CartViewController {
 
       // Bước 2: Thêm các sản phẩm vào bảng order_products
       for (CartItem item : cart.getItems()) {
-        orderRepository.addProductToOrder(orderId, item.getProduct().getProductId(), item.getQuantity());
+        orderRepository.addProductToOrder(orderId, item.getProduct().getProductId(), item.getQuantity(),);
       }
 
       showAlert("Thành công", "Đơn hàng đã được đặt thành công.");
