@@ -9,6 +9,7 @@ public class ProductDTO {
   // Constructors
   public ProductDTO() {}
 
+  // Constructor with 4 parameters
   public ProductDTO(int productId, String name, double price, String category) {
     this.productId = productId;
     this.name = name;
@@ -16,12 +17,19 @@ public class ProductDTO {
     this.category = category;
   }
 
+  // Constructor with 3 parameters
+  public ProductDTO(int productId, String name, double price) {
+    this.productId = productId;
+    this.name = name;
+    this.price = price;
+  }
+
   // Getters và Setters
-  public int getProductId() { // Đổi từ getId thành getProductId
+  public int getProductId() {
     return productId;
   }
 
-  public void setProductId(int productId) { // Đổi từ setId thành setProductId
+  public void setProductId(int productId) {
     this.productId = productId;
   }
 

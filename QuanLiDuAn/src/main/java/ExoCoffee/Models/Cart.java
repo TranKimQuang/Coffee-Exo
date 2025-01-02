@@ -29,7 +29,7 @@ public class Cart {
     }
 
     // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
-    items.add(new CartItem(product, quantity)); // Sử dụng constructor với 2 tham số
+    items.add(new CartItem(product, quantity, product.getPrice() )); // Sử dụng constructor với 2 tham số
   }
 
   public void clear() {

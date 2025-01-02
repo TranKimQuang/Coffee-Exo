@@ -26,20 +26,16 @@ public class MainController {
   private void handleViewCart() {
     System.out.println("Đang mở cửa sổ giỏ hàng...");
     try {
-      // Debug: In ra đường dẫn FXML
       String fxmlPath = "/org/ExoCoffee/FXML/cart_view.fxml";
       System.out.println("Đường dẫn FXML: " + fxmlPath);
 
-      // Tải file FXML
       FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
       Parent root = loader.load();
       System.out.println("Đã tải file FXML thành công.");
 
-      // Lấy controller của cart_view.fxml
       CartViewController cartController = loader.getController();
       System.out.println("Đã lấy được controller của cart_view.fxml.");
 
-      // Lấy giỏ hàng từ CartManager
       Cart cart = CartManager.getCart();
       if (cart == null) {
         System.err.println("Giỏ hàng không tồn tại (null).");
@@ -48,11 +44,6 @@ public class MainController {
       }
       System.out.println("Đã lấy được giỏ hàng từ CartManager.");
 
-      // Truyền giỏ hàng vào controller
-      cartController.setCart(cart);
-      System.out.println("Đã truyền giỏ hàng vào controller.");
-
-      // Tạo và hiển thị cửa sổ mới
       Stage stage = new Stage();
       stage.setTitle("Xem giỏ hàng");
       stage.setScene(new Scene(root));
@@ -64,6 +55,7 @@ public class MainController {
       showError("Không thể tải cửa sổ giỏ hàng: " + e.getMessage());
     }
   }
+
 
   private void openNewWindow(String fxmlFile, String title) {
     System.out.println("Đang mở cửa sổ mới: " + title);

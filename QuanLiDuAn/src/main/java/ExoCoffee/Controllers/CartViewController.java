@@ -1,8 +1,6 @@
 package ExoCoffee.Controllers;
 
-import ExoCoffee.Models.Cart;
-import ExoCoffee.Models.CartItem;
-import ExoCoffee.Models.OrderProductDTO;
+import ExoCoffee.Models.*;
 import ExoCoffee.Repositories.OrderRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -12,7 +10,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 public class CartViewController {
@@ -25,55 +22,75 @@ public class CartViewController {
   @FXML
   private TableColumn<CartItem, Double> priceColumn;
   @FXML
-  private TableColumn<CartItem, Double> totalPriceColumn;
+  private TableColumn<CartItem, Double> totalProductColumn;
   @FXML
-  private Label totalAmountLabel; // Label để hiển thị tổng tiền
+  private Label totalAmountLabel;
 
   private OrderRepository orderRepository = new OrderRepository();
-  private Cart cart = new Cart(); // Khởi tạo giỏ hàng
+  private static int currentOrderId = -1; // Biến tĩnh để theo dõi orderId hiện tại
 
   @FXML
   public void initialize() {
+    System.out.println("Đang khởi tạo CartViewController...");
+
     // Liên kết cột với thuộc tính trong CartItem
     productNameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+    System.out.println("Debug: Đã liên kết productNameColumn với thuộc tính 'productName'.");
+
     quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
     priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-    totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+    totalProductColumn.setCellValueFactory(new PropertyValueFactory<>("totalProduct"));
 
     // Tải dữ liệu giỏ hàng vào TableView
     loadCartData();
   }
 
-  /**
-   * Thiết lập giỏ hàng.
-   *
-   * @param cart Giỏ hàng.
-   */
-  public void setCart(Cart cart) {
-    this.cart = cart;
-    loadCartData();
-  }
-
-  /**
-   * Tải dữ liệu giỏ hàng vào TableView.
-   */
   private void loadCartData() {
+    if (currentOrderId == -1) {
+      // Kiểm tra nếu chưa có đơn hàng hiện tại
+      List<OrderDTO> unpaidOrders;
+      try {
+        unpaidOrders = orderRepository.getUnpaidOrders();
+        if (!unpaidOrders.isEmpty()) {
+          // Sử dụng đơn hàng chưa thanh toán hiện tại
+          currentOrderId = unpaidOrders.get(0).getOrderId();
+        } else {
+          // Tạo đơn hàng mới nếu không có đơn hàng chưa thanh toán
+          orderRepository.resetOrderIdIfEmpty();
+          currentOrderId = orderRepository.addOrder(0.0, new java.sql.Date(new java.util.Date().getTime()));
+          System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
+        }
+      } catch (SQLException e) {
+        e.printStackTrace();
+        showError("Lỗi khi tải hoặc tạo đơn hàng: " + e.getMessage());
+        return;
+      }
+    }
+
     try {
-      List<OrderProductDTO> orderProducts = orderRepository.getOrderProducts();
-      cartTable.getItems().setAll(orderProducts);
+      System.out.println("Đang tải dữ liệu giỏ hàng cho orderId: " + currentOrderId);
+      List<CartItem> cartItems = orderRepository.getOrderProducts(currentOrderId);
+
+      // Debug: In ra danh sách sản phẩm trong giỏ hàng
+      System.out.println("Nội dung giỏ hàng:");
+      for (CartItem item : cartItems) {
+        System.out.println("Sản phẩm: " + item.getProductName() + ", Số lượng: " + item.getQuantity() + ", Giá: " + item.getPrice() + ", Tổng giá: " + item.getTotalProduct());
+      }
+
+      cartTable.getItems().setAll(cartItems);
+      updateTotalAmount(); // Cập nhật tổng tiền
     } catch (SQLException e) {
       e.printStackTrace();
-      showAlert("Lỗi","Lỗi khi tải giỏ hàng: " + e.getMessage());
+      showError("Lỗi khi tải giỏ hàng: " + e.getMessage());
     }
   }
 
-  /**
-   * Cập nhật tổng tiền và hiển thị.
-   */
+
+
   private void updateTotalAmount() {
     if (totalAmountLabel != null) {
-      double totalAmount = cart.getItems().stream()
-          .mapToDouble(CartItem::getTotalPrice)
+      double totalAmount = cartTable.getItems().stream()
+          .mapToDouble(CartItem::getTotalProduct)
           .sum();
       totalAmountLabel.setText(String.format("Tổng tiền: %.2f", totalAmount));
     } else {
@@ -82,39 +99,72 @@ public class CartViewController {
   }
 
   @FXML
-  public void handlePlaceOrder() {
+  public void handleCreateOrder() {
+    // Lấy giỏ hàng từ CartManager
+    Cart cart = CartManager.getCart();
+
+    // Debug: Kiểm tra nội dung giỏ hàng
+    System.out.println("Nội dung giỏ hàng khi nhấn nút tạo đơn:");
+    for (CartItem item : cart.getItems()) {
+      System.out.println("Sản phẩm: " + item.getProductName() + ", Số lượng: " + item.getQuantity() + ", Giá: " + item.getPrice() + ", Tổng giá: " + item.getTotalProduct());
+    }
+
     if (cart.getItems().isEmpty()) {
-      showAlert("Cảnh báo", "Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
+      showError("Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi tạo đơn.");
       return;
     }
 
     try {
-      // Bước 1: Tạo đơn hàng mới
       double totalAmount = cart.getItems().stream()
-          .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+          .mapToDouble(CartItem::getTotalProduct)
           .sum();
-      int orderId = orderRepository.addOrder(totalAmount, new Date());
+      System.out.println("Tổng giá trị đơn hàng: " + totalAmount);
 
-      // Bước 2: Thêm các sản phẩm vào bảng order_products
+      // Cập nhật tổng giá trị đơn hàng hiện tại
+      System.out.println("currentOrderId trước khi cập nhật tổng số tiền: " + currentOrderId);
+      orderRepository.updateOrderTotalAmount(currentOrderId, totalAmount);
+      System.out.println("Đã cập nhật tổng giá trị đơn hàng: " + currentOrderId);
+
+      // Xóa các sản phẩm hiện tại trong bảng order_products trước khi thêm mới
+
       for (CartItem item : cart.getItems()) {
-        orderRepository.addProductToOrder(orderId, item.getProduct().getProductId(), item.getQuantity(),);
+        System.out.println("Đang thêm sản phẩm vào đơn hàng: " + item.getProductName());
+        orderRepository.addProductToOrder(
+            currentOrderId,
+            item.getProduct().getProductId(),
+            item.getQuantity(),
+            item.getProduct().getPrice()
+        );
+        System.out.println("Đã thêm sản phẩm vào đơn hàng: " + item.getProductName());
       }
 
-      showAlert("Thành công", "Đơn hàng đã được đặt thành công.");
-      cart.clear(); // Xóa giỏ hàng sau khi đặt hàng thành công
-      loadCartData(); // Cập nhật lại TableView
+      showAlert("Thành công", "Đơn hàng đã được tạo thành công.");
+      cart.clear(); // Xóa giỏ hàng sau khi tạo đơn hàng thành công
+      System.out.println("Đã xóa giỏ hàng.");
+
+      // Tạo một đơn hàng mới và thiết lập currentOrderId
+      currentOrderId = orderRepository.addOrder(0.0, new java.sql.Date(new java.util.Date().getTime()));
+      System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
+
+      // Tải lại dữ liệu giỏ hàng cho đơn hàng mới
+      loadCartData();
+      System.out.println("currentOrderId sau khi tạo đơn hàng mới: " + currentOrderId);
+
     } catch (SQLException e) {
       e.printStackTrace();
-      showAlert("Cảnh báo", "Lỗi khi đặt hàng: " + e.getMessage());
+      showError("Lỗi khi tạo đơn hàng: " + e.getMessage());
     }
   }
 
-  /**
-   * Hiển thị thông báo.
-   *
-   * @param title   Tiêu đề thông báo.
-   * @param message Nội dung thông báo.
-   */
+
+  private void showError(String message) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("Lỗi");
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+
   private void showAlert(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle(title);

@@ -1,9 +1,6 @@
 package ExoCoffee.Controllers;
 
-import ExoCoffee.Models.Cart;
-import ExoCoffee.Models.CartItem;
-import ExoCoffee.Models.OrderDTO;
-import ExoCoffee.Models.ProductDTO;
+import ExoCoffee.Models.*;
 import ExoCoffee.Repositories.OrderRepository;
 import ExoCoffee.Repositories.ProductRepository;
 import javafx.collections.FXCollections;
@@ -12,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
@@ -28,9 +26,13 @@ public class OrderPlacementController {
   private TableColumn<ProductDTO, Double> priceColumn;
   @FXML
   private TableColumn<ProductDTO, String> categoryColumn;
+  @FXML
+  private TextField quantityField;
 
   private ObservableList<ProductDTO> productList = FXCollections.observableArrayList();
   private Cart cart = new Cart();
+  private static int currentOrderId = -1; // Biến tĩnh để theo dõi orderId hiện tại
+  private OrderRepository orderRepository = new OrderRepository();
 
   @FXML
   public void initialize() {
@@ -64,34 +66,62 @@ public class OrderPlacementController {
   @FXML
   public void handleAddToOrder() {
     ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
-
     if (selectedProduct == null) {
       showError("Vui lòng chọn một sản phẩm để thêm vào đơn hàng.");
       return;
     }
 
-    // Thêm sản phẩm vào giỏ hàng với số lượng mặc định là 1
-    cart.addItem(selectedProduct, 1);
+    // Lấy giá trị số lượng từ quantityField
+    int quantity;
+    try {
+      quantity = Integer.parseInt(quantityField.getText());
+      if (quantity <= 0) {
+        showError("Vui lòng nhập số lượng hợp lệ (lớn hơn 0).");
+        return;
+      }
+    } catch (NumberFormatException e) {
+      showError("Vui lòng nhập số lượng hợp lệ.");
+      return;
+    }
+
+    // Lấy giỏ hàng từ CartManager
+    Cart cart = CartManager.getCart();
+
+    // Thêm sản phẩm vào giỏ hàng với số lượng từ quantityField
+    cart.addItem(selectedProduct, quantity);
     showAlert("Thành công", "Sản phẩm đã được thêm vào giỏ hàng.");
 
-    // Tạo đơn hàng mới và lấy order_id
-    try {
-      OrderRepository orderRepository = new OrderRepository();
-      double totalAmount = selectedProduct.getPrice() * 1; // Tính tổng tiền
-      int orderId = orderRepository.addOrder(totalAmount, new Date()); // Tạo đơn hàng mới
-      System.out.println("Đã tạo đơn hàng mới với orderId: " + orderId);
+    // Debug: Kiểm tra nội dung giỏ hàng sau khi thêm sản phẩm
+    System.out.println("Nội dung giỏ hàng sau khi thêm sản phẩm:");
+    for (CartItem item : cart.getItems()) {
+      System.out.println("Sản phẩm: " + item.getProductName() + ", Số lượng: " + item.getQuantity() + ", Giá: " + item.getPrice() + ", Tổng giá: " + item.getTotalProduct());
+    }
 
-      // Thêm sản phẩm vào bảng order_products
-      orderRepository.addProductToOrder(orderId, selectedProduct.getProductId(), 1);
-      System.out.println("Đã thêm sản phẩm vào bảng order_products.");
+    try {
+      if (currentOrderId == -1) {
+        // Nếu chưa có đơn hàng, kiểm tra và reset ID đơn hàng nếu cần
+        System.out.println("currentOrderId hiện tại là -1. Tiến hành reset ID đơn hàng nếu cần.");
+        orderRepository.resetOrderIdIfEmpty();
+
+        // Tạo đơn hàng mới
+        java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
+        currentOrderId = orderRepository.addOrder(0.0, sqlDate);
+        System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
+      }
+
+      // Đảm bảo rằng đơn hàng tồn tại trước khi thêm sản phẩm vào bảng order_products
+      if (currentOrderId != -1) {
+        System.out.println("Thêm sản phẩm vào order_products với orderId: " + currentOrderId);
+        orderRepository.addProductToOrder(currentOrderId, selectedProduct.getProductId(), quantity, selectedProduct.getPrice());
+        System.out.println("Đã thêm sản phẩm vào bảng order_products.");
+      } else {
+        System.err.println("Lỗi: Không thể thêm sản phẩm, orderId không hợp lệ.");
+      }
     } catch (SQLException e) {
       e.printStackTrace();
       showError("Lỗi khi thêm sản phẩm vào đơn hàng: " + e.getMessage());
     }
   }
-
-
-
 
   /**
    * Hiển thị thông báo.

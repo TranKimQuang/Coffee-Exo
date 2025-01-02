@@ -18,6 +18,7 @@
                 <TableColumn fx:id="orderDateColumn" text="Ngày đặt hàng" />
             </columns>
         </TableView>
+        <Button text="Thanh toán" onAction="#handleCheckout" />
         <Button text="Xóa đơn hàng" onAction="#handleDeleteOrder" />
     </children>
 </VBox>
