@@ -21,15 +21,17 @@ public class Cart {
 
     // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
     for (CartItem item : items) {
-      if (item.getProduct().getProductId() == product.getProductId()) {
+      if (item.getProductId() == product.getProductId()) {
         // Nếu đã có, tăng số lượng
         item.setQuantity(item.getQuantity() + quantity);
+        // Cập nhật lại tổng giá cho sản phẩm
+        item.setTotalProduct(item.getQuantity() * item.getPrice());
         return;
       }
     }
 
     // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
-    items.add(new CartItem(product, quantity, product.getPrice() )); // Sử dụng constructor với 2 tham số
+    items.add(new CartItem(product, quantity)); // Sử dụng constructor với ProductDTO và quantity
   }
 
   public void clear() {

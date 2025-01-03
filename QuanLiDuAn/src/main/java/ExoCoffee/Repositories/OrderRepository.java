@@ -1,17 +1,129 @@
 package ExoCoffee.Repositories;
 
-import ExoCoffee.Models.OrderDTO;
 import ExoCoffee.Models.CartItem;
+import ExoCoffee.Models.OrderDTO;
 import ExoCoffee.Models.ProductDTO;
+import ExoCoffee.Models.StatisticsDTO;
 import ExoCoffee.Utils.DBUtils;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderRepository {
+  // Phương thức lấy danh sách các đơn hàng đã thanh toán
+  public List<OrderDTO> getPaidOrders() throws SQLException {
+    String query = "SELECT order_id, order_date, total_amount FROM orders WHERE paid = true";
+    List<OrderDTO> paidOrders = new ArrayList<>();
 
-  /**
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query);
+         ResultSet resultSet = statement.executeQuery()) {
+
+      while (resultSet.next()) {
+        int orderId = resultSet.getInt("order_id");
+        String orderDate = resultSet.getString("order_date");
+        double totalAmount = resultSet.getDouble("total_amount");
+        paidOrders.add(new OrderDTO(orderId, totalAmount, orderDate));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new SQLException("Lỗi khi tải dữ liệu đơn hàng đã thanh toán.", e);
+    }
+
+    return paidOrders;
+  }
+
+  // Phương thức lấy danh sách các đơn hàng đã thanh toán theo ngày
+  public List<OrderDTO> getPaidOrdersByDate(LocalDate date) throws SQLException {
+    String query = "SELECT order_id, order_date, total_amount FROM orders WHERE paid = true AND DATE(order_date) = ?";
+    List<OrderDTO> paidOrders = new ArrayList<>();
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setDate(1, Date.valueOf(date));
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          int orderId = resultSet.getInt("order_id");
+          String orderDate = resultSet.getString("order_date");
+          double totalAmount = resultSet.getDouble("total_amount");
+          paidOrders.add(new OrderDTO(orderId, totalAmount, orderDate));
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new SQLException("Lỗi khi tải dữ liệu đơn hàng đã thanh toán theo ngày.", e);
+    }
+
+    return paidOrders;
+  }
+
+  // Phương thức lấy danh sách sản phẩm của đơn hàng dựa trên order_id
+  public List<CartItem> getOrderProducts(int orderId) throws SQLException {
+    String query = "SELECT op.product_id, p.name, op.quantity, op.price, (op.quantity * op.price) AS total_product " +
+        "FROM order_products op " +
+        "JOIN products p ON op.product_id = p.product_id " +
+        "WHERE op.order_id = ?";
+
+    List<CartItem> orderProducts = new ArrayList<>();
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, orderId);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          int productId = resultSet.getInt("product_id");
+          String productName = resultSet.getString("name");
+          int quantity = resultSet.getInt("quantity");
+          double price = resultSet.getDouble("price");
+          double totalProduct = resultSet.getDouble("total_product");
+
+          CartItem item = new CartItem(productId, productName, quantity, price, totalProduct);
+          orderProducts.add(item);
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new SQLException("Lỗi khi tải dữ liệu sản phẩm của đơn hàng.", e);
+    }
+
+    return orderProducts;
+  }
+
+  // Phương thức lấy thống kê sản phẩm theo ngày
+  public List<StatisticsDTO> getStatisticsByDate(LocalDate date) throws SQLException {
+    String query = "SELECT op.product_id, p.product_name, SUM(op.quantity) AS total_quantity, SUM(op.price * op.quantity) AS total_price " +
+        "FROM order_products op " +
+        "JOIN orders o ON op.order_id = o.order_id " +
+        "JOIN products p ON op.product_id = p.product_id " +
+        "WHERE DATE(o.order_date) = ? AND o.paid = true " +
+        "GROUP BY op.product_id, p.product_name";
+
+    List<StatisticsDTO> statistics = new ArrayList<>();
+
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setDate(1, Date.valueOf(date));
+      try (ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          int productId = resultSet.getInt("product_id");
+          String productName = resultSet.getString("product_name");
+          int totalQuantity = resultSet.getInt("total_quantity");
+          double totalPrice = resultSet.getDouble("total_price");
+
+          StatisticsDTO stat = new StatisticsDTO(productId, productName, totalQuantity, totalPrice);
+          statistics.add(stat);
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new SQLException("Lỗi khi tải dữ liệu thống kê.", e);
+    }
+
+    return statistics;
+  }
+/**
    * Lấy tất cả đơn hàng chưa thanh toán từ database.
    *
    * @return Danh sách đơn hàng chưa thanh toán.
@@ -99,6 +211,12 @@ public class OrderRepository {
       // Debug: In ra thông tin chi tiết
       System.out.println("Chuẩn bị thêm sản phẩm vào order_products với orderId: " + orderId + ", productId: " + productId + ", quantity: " + quantity + ", price: " + price);
 
+      // Kiểm tra xem orderId có tồn tại trong bảng orders không
+      if (!doesOrderExist(orderId)) {
+        System.err.println("Lỗi: orderId " + orderId + " không tồn tại trong bảng orders.");
+        throw new SQLException("Lỗi khi thêm sản phẩm vào đơn hàng: orderId không tồn tại.");
+      }
+
       statement.executeUpdate();
 
       System.out.println("Thêm sản phẩm thành công vào order_products với orderId: " + orderId);
@@ -108,6 +226,21 @@ public class OrderRepository {
       throw new SQLException("Lỗi khi thêm sản phẩm vào đơn hàng.", e);
     }
   }
+
+  private boolean doesOrderExist(int orderId) throws SQLException {
+    String query = "SELECT COUNT(*) FROM orders WHERE order_id = ?";
+    try (Connection connection = DBUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, orderId);
+      try (ResultSet resultSet = statement.executeQuery()) {
+        if (resultSet.next()) {
+          return resultSet.getInt(1) > 0;
+        }
+      }
+    }
+    return false;
+  }
+
 
 
 
@@ -150,43 +283,6 @@ public class OrderRepository {
       }
     }
     return 0.0; // Trả về 0 nếu không có sản phẩm
-  }
-
-  /**
-   * Lấy tất cả sản phẩm từ giỏ hàng (order_products) và thông tin sản phẩm từ bảng products.
-   *
-   * @return Danh sách CartItem.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
-  public List<CartItem> getOrderProducts(int orderId) throws SQLException {
-    String query = "SELECT p.product_id, p.name, op.quantity, op.price, (op.quantity * op.price) AS total_product " +
-        "FROM products p " +
-        "JOIN order_products op ON p.product_id = op.product_id " +
-        "WHERE op.order_id = ?";
-    List<CartItem> items = new ArrayList<>();
-
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setInt(1, orderId);
-      ResultSet resultSet = statement.executeQuery();
-
-      while (resultSet.next()) {
-        int productId = resultSet.getInt("product_id");
-        String productName = resultSet.getString("name");
-        int quantity = resultSet.getInt("quantity");
-        double price = resultSet.getDouble("price");
-        double totalProduct = resultSet.getDouble("total_product");
-
-        ProductDTO product = new ProductDTO(productId, productName, price);
-        CartItem item = new CartItem(product, quantity, totalProduct);
-        items.add(item);
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-      throw new SQLException("Lỗi khi lấy sản phẩm từ đơn hàng.", e);
-    }
-
-    return items;
   }
 
   /**

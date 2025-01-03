@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
-import java.util.Date;
 
 public class OrderPlacementController {
   @FXML
@@ -31,7 +30,6 @@ public class OrderPlacementController {
 
   private ObservableList<ProductDTO> productList = FXCollections.observableArrayList();
   private Cart cart = new Cart();
-  private static int currentOrderId = -1; // Biến tĩnh để theo dõi orderId hiện tại
   private OrderRepository orderRepository = new OrderRepository();
 
   @FXML
@@ -47,9 +45,6 @@ public class OrderPlacementController {
     loadProductData();
   }
 
-  /**
-   * Tải dữ liệu sản phẩm từ cơ sở dữ liệu.
-   */
   private void loadProductData() {
     ProductRepository productRepository = new ProductRepository();
     try {
@@ -60,9 +55,6 @@ public class OrderPlacementController {
     }
   }
 
-  /**
-   * Xử lý sự kiện thêm sản phẩm vào giỏ hàng.
-   */
   @FXML
   public void handleAddToOrder() {
     ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
@@ -98,6 +90,7 @@ public class OrderPlacementController {
     }
 
     try {
+      int currentOrderId = OrderState.getCurrentOrderId();
       if (currentOrderId == -1) {
         // Nếu chưa có đơn hàng, kiểm tra và reset ID đơn hàng nếu cần
         System.out.println("currentOrderId hiện tại là -1. Tiến hành reset ID đơn hàng nếu cần.");
@@ -106,6 +99,7 @@ public class OrderPlacementController {
         // Tạo đơn hàng mới
         java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
         currentOrderId = orderRepository.addOrder(0.0, sqlDate);
+        OrderState.setCurrentOrderId(currentOrderId);
         System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
       }
 
@@ -123,12 +117,6 @@ public class OrderPlacementController {
     }
   }
 
-  /**
-   * Hiển thị thông báo.
-   *
-   * @param title   Tiêu đề thông báo.
-   * @param message Nội dung thông báo.
-   */
   private void showAlert(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle(title);
@@ -136,14 +124,10 @@ public class OrderPlacementController {
     alert.showAndWait();
   }
 
-  /**
-   * Hiển thị thông báo lỗi.
-   *
-   * @param message Nội dung thông báo lỗi.
-   */
   private void showError(String message) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Lỗi");
+    alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
   }

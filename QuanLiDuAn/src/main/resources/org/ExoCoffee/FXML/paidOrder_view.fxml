@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.OrderProductsController" spacing="10">
+    <!-- Padding cho VBox -->
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <!-- Bảng hiển thị chi tiết các sản phẩm của đơn hàng -->
+    <TableView fx:id="orderProductsTable">
+        <columns>
+            <TableColumn fx:id="productIdColumn" text="Mã SP"/>
+            <TableColumn fx:id="productNameColumn" text="Tên SP"/>
+            <TableColumn fx:id="quantityColumn" text="Số Lượng"/>
+            <TableColumn fx:id="priceColumn" text="Giá"/>
+            <TableColumn fx:id="totalProductColumn" text="Tổng Giá"/>
+        </columns>
+    </TableView>
+
+    <!-- Nút để đóng cửa sổ -->
+    <Button text="Đóng" onAction="#handleClose"/>
+</VBox>

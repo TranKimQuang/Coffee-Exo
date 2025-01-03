@@ -46,16 +46,31 @@ public class ProductRepository {
     }
   }
 
-  public void updateProduct(ProductDTO productDTO) throws SQLException {
-    String query = "UPDATE products SET price = ?, category = ? WHERE product_id = ?";
-    try (Connection connection = getConnection();
+  public void updateProduct(ProductDTO product) throws SQLException {
+    String query = "UPDATE products SET name = ?, price = ?, category = ? WHERE product_id = ?";
+
+    try (Connection connection = DBUtils.getConnection();
          PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setDouble(1, productDTO.getPrice());
-      statement.setString(2, productDTO.getCategory());
-      statement.setInt(3, productDTO.getProductId());
-      statement.executeUpdate();
+      statement.setString(1, product.getName());
+      statement.setDouble(2, product.getPrice());
+      statement.setString(3, product.getCategory());
+      statement.setInt(4, product.getProductId());
+
+      System.out.println("Chuẩn bị cập nhật sản phẩm với productId: " + product.getProductId() + ", name: " + product.getName() + ", price: " + product.getPrice() + ", category: " + product.getCategory());
+
+      int rowsUpdated = statement.executeUpdate();
+      if (rowsUpdated > 0) {
+        System.out.println("Cập nhật sản phẩm thành công.");
+      } else {
+        System.out.println("Không có sản phẩm nào được cập nhật.");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      System.out.println("Lỗi SQL: " + e.getMessage());
+      throw new SQLException("Lỗi khi cập nhật sản phẩm.", e);
     }
   }
+
 
   public void deleteProduct(int productId) throws SQLException {
     String query = "DELETE FROM products WHERE product_id = ?";

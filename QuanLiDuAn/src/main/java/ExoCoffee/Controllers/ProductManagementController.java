@@ -5,13 +5,16 @@ import ExoCoffee.Repositories.ProductRepository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class ProductManagementController {
@@ -37,6 +40,7 @@ public class ProductManagementController {
   private HBox hbox;
 
   private ObservableList<ProductDTO> productDTOList;
+  private ProductRepository productRepository = new ProductRepository();
 
   @FXML
   public void initialize() {
@@ -61,7 +65,6 @@ public class ProductManagementController {
   }
 
   private void loadProductData() {
-    ProductRepository productRepository = new ProductRepository();
     try {
       productDTOList.setAll(productRepository.getAllProducts());
     } catch (SQLException e) {
@@ -88,7 +91,6 @@ public class ProductManagementController {
     String category = categoryField.getText();
 
     ProductDTO productDTO = new ProductDTO(productId, name, price, category);
-    ProductRepository productRepository = new ProductRepository();
     try {
       productRepository.addProduct(productDTO);
       productDTOList.add(productDTO);
@@ -106,7 +108,6 @@ public class ProductManagementController {
     String category = categoryField.getText();
 
     ProductDTO productDTO = new ProductDTO(productId, name, price, category);
-    ProductRepository productRepository = new ProductRepository();
     try {
       productRepository.updateProduct(productDTO);
       loadProductData();
@@ -121,7 +122,6 @@ public class ProductManagementController {
     ProductDTO selectedProduct = productTable.getSelectionModel().getSelectedItem();
     if (selectedProduct != null) {
       int productId = selectedProduct.getProductId();
-      ProductRepository productRepository = new ProductRepository();
       try {
         productRepository.deleteProduct(productId);
         loadProductData();
@@ -129,6 +129,20 @@ public class ProductManagementController {
       } catch (SQLException e) {
         e.printStackTrace();
       }
+    }
+  }
+
+  @FXML
+  private void handleOpenStatisticsView() {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/ExoCoffee/FXML/statistics_view.fxml"));
+      Parent root = fxmlLoader.load();
+      Stage stage = new Stage();
+      stage.setTitle("Đơn hàng đã thanh toán");
+      stage.setScene(new Scene(root));
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 

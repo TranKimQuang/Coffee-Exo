@@ -1,22 +1,45 @@
 package ExoCoffee.Models;
 
 public class CartItem {
-  private ProductDTO product;
+  private int productId;
+  private String productName;
   private int quantity;
+  private double price;
   private double totalProduct;
 
-  public CartItem(ProductDTO product, int quantity, double totalProduct) {
-    this.product = product;
+  // Constructor hiện tại
+  public CartItem(int productId, String productName, int quantity, double price, double totalProduct) {
+    this.productId = productId;
+    this.productName = productName;
     this.quantity = quantity;
+    this.price = price;
     this.totalProduct = totalProduct;
   }
 
-  public ProductDTO getProduct() {
-    return product;
+  // Constructor mới chấp nhận ProductDTO
+  public CartItem(ProductDTO product, int quantity) {
+    this.productId = product.getProductId();
+    this.productName = product.getName();
+    this.quantity = quantity;
+    this.price = product.getPrice();
+    this.totalProduct = this.price * this.quantity;
   }
 
-  public void setProduct(ProductDTO product) {
-    this.product = product;
+  // Getters and setters
+  public int getProductId() {
+    return productId;
+  }
+
+  public void setProductId(int productId) {
+    this.productId = productId;
+  }
+
+  public String getProductName() {
+    return productName;
+  }
+
+  public void setProductName(String productName) {
+    this.productName = productName;
   }
 
   public int getQuantity() {
@@ -27,19 +50,19 @@ public class CartItem {
     this.quantity = quantity;
   }
 
+  public double getPrice() {
+    return price;
+  }
+
+  public void setPrice(double price) {
+    this.price = price;
+  }
+
   public double getTotalProduct() {
-    return this.getQuantity() * this.getPrice();
+    return totalProduct;
   }
 
   public void setTotalProduct(double totalProduct) {
     this.totalProduct = totalProduct;
-  }
-
-  public String getProductName() {
-    return product.getName();
-  }
-
-  public double getPrice() {
-    return product.getPrice();
   }
 }

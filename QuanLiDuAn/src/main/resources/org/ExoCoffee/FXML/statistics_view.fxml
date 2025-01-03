@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.PaidOrdersController" spacing="10">
+    <!-- Padding cho VBox -->
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <!-- HBox chứa DatePicker và nút xem thống kê -->
+    <HBox spacing="10">
+        <DatePicker fx:id="datePicker" promptText="Chọn ngày" onAction="#handleDateChange"/>
+        <Button text="Xem thống kê" onAction="#handleViewStatistics"/>
+    </HBox>
+
+    <!-- Bảng hiển thị các đơn hàng đã thanh toán -->
+    <TableView fx:id="ordersTable">
+        <columns>
+            <TableColumn fx:id="orderIdColumn" text="Mã Đơn Hàng"/>
+            <TableColumn fx:id="orderDateColumn" text="Ngày Đặt"/>
+            <TableColumn fx:id="totalAmountColumn" text="Tổng Số Tiền"/>
+        </columns>
+    </TableView>
+
+    <!-- Nút để xem chi tiết đơn hàng -->
+    <Button text="Xem chi tiết đơn hàng" onAction="#handleViewOrderDetails"/>
+</VBox>

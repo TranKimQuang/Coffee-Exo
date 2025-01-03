@@ -27,7 +27,6 @@ public class CartViewController {
   private Label totalAmountLabel;
 
   private OrderRepository orderRepository = new OrderRepository();
-  private static int currentOrderId = -1; // Biến tĩnh để theo dõi orderId hiện tại
 
   @FXML
   public void initialize() {
@@ -46,6 +45,7 @@ public class CartViewController {
   }
 
   private void loadCartData() {
+    int currentOrderId = OrderState.getCurrentOrderId();
     if (currentOrderId == -1) {
       // Kiểm tra nếu chưa có đơn hàng hiện tại
       List<OrderDTO> unpaidOrders;
@@ -54,10 +54,12 @@ public class CartViewController {
         if (!unpaidOrders.isEmpty()) {
           // Sử dụng đơn hàng chưa thanh toán hiện tại
           currentOrderId = unpaidOrders.get(0).getOrderId();
+          OrderState.setCurrentOrderId(currentOrderId);
         } else {
           // Tạo đơn hàng mới nếu không có đơn hàng chưa thanh toán
           orderRepository.resetOrderIdIfEmpty();
           currentOrderId = orderRepository.addOrder(0.0, new java.sql.Date(new java.util.Date().getTime()));
+          OrderState.setCurrentOrderId(currentOrderId);
           System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
         }
       } catch (SQLException e) {
@@ -65,6 +67,9 @@ public class CartViewController {
         showError("Lỗi khi tải hoặc tạo đơn hàng: " + e.getMessage());
         return;
       }
+    } else {
+      // In ra thông tin orderId hiện tại
+      System.out.println("currentOrderId khi load dữ liệu giỏ hàng: " + currentOrderId);
     }
 
     try {
@@ -84,8 +89,6 @@ public class CartViewController {
       showError("Lỗi khi tải giỏ hàng: " + e.getMessage());
     }
   }
-
-
 
   private void updateTotalAmount() {
     if (totalAmountLabel != null) {
@@ -120,23 +123,13 @@ public class CartViewController {
           .sum();
       System.out.println("Tổng giá trị đơn hàng: " + totalAmount);
 
+      int currentOrderId = OrderState.getCurrentOrderId();
+
       // Cập nhật tổng giá trị đơn hàng hiện tại
       System.out.println("currentOrderId trước khi cập nhật tổng số tiền: " + currentOrderId);
       orderRepository.updateOrderTotalAmount(currentOrderId, totalAmount);
       System.out.println("Đã cập nhật tổng giá trị đơn hàng: " + currentOrderId);
 
-      // Xóa các sản phẩm hiện tại trong bảng order_products trước khi thêm mới
-
-      for (CartItem item : cart.getItems()) {
-        System.out.println("Đang thêm sản phẩm vào đơn hàng: " + item.getProductName());
-        orderRepository.addProductToOrder(
-            currentOrderId,
-            item.getProduct().getProductId(),
-            item.getQuantity(),
-            item.getProduct().getPrice()
-        );
-        System.out.println("Đã thêm sản phẩm vào đơn hàng: " + item.getProductName());
-      }
 
       showAlert("Thành công", "Đơn hàng đã được tạo thành công.");
       cart.clear(); // Xóa giỏ hàng sau khi tạo đơn hàng thành công
@@ -144,6 +137,7 @@ public class CartViewController {
 
       // Tạo một đơn hàng mới và thiết lập currentOrderId
       currentOrderId = orderRepository.addOrder(0.0, new java.sql.Date(new java.util.Date().getTime()));
+      OrderState.setCurrentOrderId(currentOrderId);
       System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
 
       // Tải lại dữ liệu giỏ hàng cho đơn hàng mới
@@ -155,7 +149,6 @@ public class CartViewController {
       showError("Lỗi khi tạo đơn hàng: " + e.getMessage());
     }
   }
-
 
   private void showError(String message) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
