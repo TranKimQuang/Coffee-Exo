@@ -23,5 +23,5 @@
     </TableView>
 
     <!-- Nút để đóng cửa sổ -->
-    <Button text="Đóng" onAction="#handleClose"/>
+    <Button text="Đóng" styleClass="login-button" stylesheets="@../CSS/styles.css" onAction="#handleClose"/>
 </VBox>

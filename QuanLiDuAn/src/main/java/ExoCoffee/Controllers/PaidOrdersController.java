@@ -99,36 +99,6 @@ public class PaidOrdersController {
     }
   }
 
-  @FXML
-  private void handleViewStatistics() {
-    LocalDate selectedDate = datePicker.getValue();
-    if (selectedDate == null) {
-      showError("Vui lòng chọn một ngày để xem thống kê.");
-      return;
-    }
-
-    try {
-      List<StatisticsDTO> statistics = orderRepository.getStatisticsByDate(selectedDate);
-      displayStatistics(statistics);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      showError("Lỗi khi tải dữ liệu thống kê: " + e.getMessage());
-    }
-  }
-
-  private void displayStatistics(List<StatisticsDTO> statistics) {
-    // Hiển thị thông tin thống kê, ví dụ: trong một TableView hoặc Alert
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle("Thống kê ngày " + datePicker.getValue().toString());
-    alert.setHeaderText(null);
-    StringBuilder content = new StringBuilder();
-    for (StatisticsDTO stat : statistics) {
-      content.append(stat.toString()).append("\n");
-    }
-    alert.setContentText(content.toString());
-    alert.showAndWait();
-  }
-
   private void showError(String message) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Lỗi");

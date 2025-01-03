@@ -16,7 +16,7 @@
                 <TableColumn fx:id="orderDateColumn" prefWidth="105.0" text="Ngày đặt hàng" />
             </columns>
         </TableView>
-        <Button onAction="#handleCheckout" text="Thanh toán" />
-        <Button onAction="#handleDeleteOrder" text="Xóa đơn hàng" />
+        <Button onAction="#handleCheckout" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Thanh toán" />
+        <Button onAction="#handleDeleteOrder" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Xóa đơn hàng" />
     </children>
 </VBox>

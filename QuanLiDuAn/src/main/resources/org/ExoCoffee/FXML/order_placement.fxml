@@ -20,7 +20,7 @@
         <HBox prefHeight="39.0" prefWidth="322.0" spacing="10.0">
             <children>
                 <TextField fx:id="quantityField" prefHeight="26.0" prefWidth="130.0" promptText="Nhập số lượng" />
-                <Button onAction="#handleAddToOrder" text="Thêm vào đơn hàng" />
+                <Button onAction="#handleAddToOrder" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Thêm vào đơn hàng" />
             </children>
         </HBox>
     </children>

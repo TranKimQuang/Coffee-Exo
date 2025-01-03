@@ -25,5 +25,5 @@
     </TableView>
 
     <!-- Nút để xem chi tiết đơn hàng -->
-    <Button onAction="#handleViewOrderDetails" text="Xem chi tiết đơn hàng" />
+    <Button onAction="#handleViewOrderDetails" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Xem chi tiết đơn hàng" />
 </VBox>

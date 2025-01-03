@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" style="-fx-background-color: linear-gradient(to bottom, #f0f8ff, #c6e2ff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.EmployeeController">
+    <!-- Padding cho VBox -->
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+
+    <!-- HBox chứa các trường nhập liệu và nút -->
+    <HBox fx:id="hbox" spacing="10">
+        <TextField fx:id="usernameField" promptText="Username" />
+        <TextField fx:id="passwordField" promptText="Password" />
+        <ComboBox fx:id="roleComboBox" promptText="Role">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="User" />
+                    <String fx:value="Admin" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button onAction="#handleAddUser" text="Thêm" />
+        <Button onAction="#handleDeleteUser" text="Xóa" />
+        <Button onAction="#handleClearFields" text="Xóa Dữ Liệu" />
+    </HBox>
+
+    <!-- Bảng hiển thị nhân viên -->
+    <TableView fx:id="userTable">
+        <columns>
+            <TableColumn fx:id="userIdColumn" prefWidth="95.99999845027924" text="User ID" />
+            <TableColumn fx:id="usernameColumn" prefWidth="183.79999542236328" text="Username" />
+            <TableColumn fx:id="passwordColumn" prefWidth="219.4000244140625" text="Password" />
+            <TableColumn fx:id="roleColumn" prefWidth="96.39999389648438" text="Role" />
+        </columns>
+    </TableView>
+
+    <!-- Nút để đóng cửa sổ -->
+    <Button onAction="#handleClose" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Đóng" />
+</VBox>

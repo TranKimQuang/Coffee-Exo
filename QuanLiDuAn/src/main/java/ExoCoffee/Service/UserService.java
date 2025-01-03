@@ -3,9 +3,15 @@ package ExoCoffee.Service;
 import ExoCoffee.Repositories.UserRepository;
 import ExoCoffee.Models.UserDTO;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserService {
   private UserRepository userRepository = new UserRepository();
+
+  // Lấy tất cả người dùng
+  public List<UserDTO> getAllUsers() throws SQLException {
+    return userRepository.getAllUsers();
+  }
 
   // Lấy thông tin người dùng bằng tên đăng nhập
   public UserDTO getUserByUsername(String username) throws SQLException {

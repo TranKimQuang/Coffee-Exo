@@ -4,6 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <VBox spacing="10" style="-fx-background-color: linear-gradient(to bottom, #f0f8ff, #c6e2ff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ProductManagementController">
     <!-- Padding cho VBox -->
     <padding>
@@ -15,7 +17,14 @@
         <TextField fx:id="productIdField" promptText="Mã SP" />
         <TextField fx:id="nameField" promptText="Tên SP" />
         <TextField fx:id="priceField" promptText="Giá" />
-        <TextField fx:id="categoryField" promptText="Danh mục" />
+        <ComboBox fx:id="categoryComboBox" promptText="Danh mục">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Đồ ăn" />
+                    <String fx:value="Đồ uống" />
+                </FXCollections>
+            </items>
+        </ComboBox>
         <Button onAction="#handleAddProduct" text="Thêm" />
         <Button onAction="#handleUpdateProduct" text="Sửa" />
         <Button onAction="#handleDeleteProduct" text="Xóa" />
@@ -31,7 +40,13 @@
          <TableColumn prefWidth="341.5999755859375" text="Ghi chú" />
         </columns>
     </TableView>
-
-    <!-- Nút để mở cửa sổ xem thống kê -->
-    <Button onAction="#handleOpenStatisticsView" text="Xem thống kê" />
+   <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+      <children>
+      
+          <!-- Nút để mở cửa sổ xem thống kê -->
+          <Button onAction="#handleOpenStatisticsView" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Xem thống kê" />
+          <!--Nút xem Thông tin nhân viên-->
+         <Button onAction="#handleEmployeeView" mnemonicParsing="false" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Xem Nhân viên " />
+      </children>
+   </HBox>
 </VBox>

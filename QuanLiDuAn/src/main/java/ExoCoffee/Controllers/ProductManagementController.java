@@ -35,7 +35,7 @@ public class ProductManagementController {
   @FXML
   private TextField priceField;
   @FXML
-  private TextField categoryField;
+  private ComboBox<String> categoryComboBox; // Sử dụng ComboBox thay vì TextField cho category
   @FXML
   private HBox hbox;
 
@@ -51,7 +51,6 @@ public class ProductManagementController {
 
     productDTOList = FXCollections.observableArrayList();
     productTable.setItems(productDTOList);
-
     loadProductData();
 
     // Thêm sự kiện khi click vào một sản phẩm trong bảng
@@ -61,7 +60,7 @@ public class ProductManagementController {
     HBox.setHgrow(productIdField, Priority.ALWAYS);
     HBox.setHgrow(nameField, Priority.ALWAYS);
     HBox.setHgrow(priceField, Priority.ALWAYS);
-    HBox.setHgrow(categoryField, Priority.ALWAYS);
+    HBox.setHgrow(categoryComboBox, Priority.ALWAYS);
   }
 
   private void loadProductData() {
@@ -77,7 +76,7 @@ public class ProductManagementController {
       productIdField.setText(String.valueOf(product.getProductId()));
       nameField.setText(product.getName());
       priceField.setText(String.valueOf(product.getPrice()));
-      categoryField.setText(product.getCategory());
+      categoryComboBox.setValue(product.getCategory());
     } else {
       clearFields();
     }
@@ -88,7 +87,7 @@ public class ProductManagementController {
     String name = nameField.getText();
     int productId = Integer.parseInt(productIdField.getText());
     double price = Double.parseDouble(priceField.getText());
-    String category = categoryField.getText();
+    String category = categoryComboBox.getValue();
 
     ProductDTO productDTO = new ProductDTO(productId, name, price, category);
     try {
@@ -105,7 +104,7 @@ public class ProductManagementController {
     String name = nameField.getText();
     int productId = Integer.parseInt(productIdField.getText());
     double price = Double.parseDouble(priceField.getText());
-    String category = categoryField.getText();
+    String category = categoryComboBox.getValue();
 
     ProductDTO productDTO = new ProductDTO(productId, name, price, category);
     try {
@@ -145,11 +144,24 @@ public class ProductManagementController {
       e.printStackTrace();
     }
   }
+  @FXML
+  private void handleEmployeeView() {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/ExoCoffee/FXML/user_management.fxml"));
+      Parent root = fxmlLoader.load();
+      Stage stage = new Stage();
+      stage.setTitle("Thông tin nhân viên");
+      stage.setScene(new Scene(root));
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
   private void clearFields() {
     productIdField.clear();
     nameField.clear();
     priceField.clear();
-    categoryField.clear();
+    categoryComboBox.setValue(null);
   }
 }

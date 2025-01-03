@@ -123,12 +123,7 @@ public class OrderRepository {
 
     return statistics;
   }
-/**
-   * Lấy tất cả đơn hàng chưa thanh toán từ database.
-   *
-   * @return Danh sách đơn hàng chưa thanh toán.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
+
   public List<OrderDTO> getUnpaidOrders() throws SQLException {
     String query = "SELECT order_id, total_amount, order_date FROM orders WHERE paid = false";
     List<OrderDTO> orders = new ArrayList<>();
@@ -152,18 +147,6 @@ public class OrderRepository {
     return orders;
   }
 
-
-
-
-
-/**
-   * Thêm một đơn hàng mới vào database.
-   *
-   * @param totalAmount Tổng giá trị đơn hàng.
-   * @param orderDate   Ngày đặt hàng.
-   * @return ID của đơn hàng vừa được thêm, hoặc -1 nếu thêm không thành công.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
   public int addOrder(double totalAmount, java.sql.Date orderDate) throws SQLException {
     String query = "INSERT INTO orders (total_amount, order_date, paid) VALUES (?, ?, false)";
     int orderId = -1;
@@ -188,15 +171,6 @@ public class OrderRepository {
     return orderId;
   }
 
-  /**
-   * Thêm sản phẩm vào đơn hàng.
-   *
-   * @param orderId    ID của đơn hàng.
-   * @param productId  ID của sản phẩm.
-   * @param quantity   Số lượng sản phẩm.
-   * @param price      Giá sản phẩm.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
   public void addProductToOrder(int orderId, int productId, int quantity, double price) throws SQLException {
     String query = "INSERT INTO order_products (order_id, product_id, quantity, price, total_product) VALUES (?, ?, ?, ?, ?)";
 
@@ -241,12 +215,6 @@ public class OrderRepository {
     return false;
   }
 
-  /**
-   * Xóa một đơn hàng và các sản phẩm liên quan.
-   *
-   * @param orderId ID của đơn hàng.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
   public void deleteOrder(int orderId) throws SQLException {
     String query = "DELETE FROM orders WHERE order_id = ?";
 
@@ -261,11 +229,6 @@ public class OrderRepository {
     }
   }
 
-  /**
-   * Kiểm tra và reset ID đơn hàng nếu không có đơn hàng nào.
-   *
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
   public void resetOrderIdIfEmpty() throws SQLException {
     String checkQuery = "SELECT COUNT(*) AS total FROM orders";
     String resetOrderQuery = "ALTER TABLE orders AUTO_INCREMENT = 1";
@@ -294,12 +257,7 @@ public class OrderRepository {
       throw new SQLException("Lỗi khi reset ID đơn hàng.", e);
     }
   }
-  /**
-   * Đánh dấu đơn hàng là đã thanh toán.
-   *
-   * @param orderId ID của đơn hàng.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
+
   public void markOrderAsPaid(int orderId) throws SQLException {
     String query = "UPDATE orders SET paid = true WHERE order_id = ?";
     try (Connection connection = DBUtils.getConnection();
@@ -312,13 +270,6 @@ public class OrderRepository {
     }
   }
 
-  /**
-   * Cập nhật tổng giá trị của đơn hàng.
-   *
-   * @param orderId     ID của đơn hàng.
-   * @param totalAmount Tổng giá trị mới của đơn hàng.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
   public void updateOrderTotalAmount(int orderId, double totalAmount) throws SQLException {
     String query = "UPDATE orders SET total_amount = ? WHERE order_id = ?";
 
