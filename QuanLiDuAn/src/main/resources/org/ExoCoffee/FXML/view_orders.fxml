@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ViewOrdersController" spacing="10">
+<VBox prefHeight="493.0" prefWidth="308.0" spacing="10" style="-fx-background-color: linear-gradient(to bottom, #f0f8ff, #c6e2ff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ViewOrdersController">
     <padding>
-        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
     <children>
         <TableView fx:id="orderTable">
             <columns>
-                <TableColumn fx:id="orderIdColumn" text="Mã đơn hàng" />
-                <TableColumn fx:id="totalAmountColumn" text="Tổng số tiền" />
-                <TableColumn fx:id="orderDateColumn" text="Ngày đặt hàng" />
+                <TableColumn fx:id="orderIdColumn" prefWidth="87.9999965429306" text="Mã đơn hàng" />
+                <TableColumn fx:id="totalAmountColumn" prefWidth="94.99998474121094" text="Tổng số tiền" />
+                <TableColumn fx:id="orderDateColumn" prefWidth="105.0" text="Ngày đặt hàng" />
             </columns>
         </TableView>
-        <Button text="Thanh toán" onAction="#handleCheckout" />
-        <Button text="Xóa đơn hàng" onAction="#handleDeleteOrder" />
+        <Button onAction="#handleCheckout" text="Thanh toán" />
+        <Button onAction="#handleDeleteOrder" text="Xóa đơn hàng" />
     </children>
 </VBox>

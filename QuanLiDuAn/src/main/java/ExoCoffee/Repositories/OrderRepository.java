@@ -241,10 +241,6 @@ public class OrderRepository {
     return false;
   }
 
-
-
-
-
   /**
    * Xóa một đơn hàng và các sản phẩm liên quan.
    *
@@ -263,26 +259,6 @@ public class OrderRepository {
       e.printStackTrace();
       throw new SQLException("Lỗi khi xóa đơn hàng.", e);
     }
-  }
-
-  /**
-   * Tính tổng giá trị của giỏ hàng (order_products).
-   *
-   * @return Tổng giá trị của giỏ hàng.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
-  public double calculateTotalAmount() throws SQLException {
-    String query = "SELECT SUM(price * quantity) AS total_amount FROM order_products";
-
-    try (Connection conn = DBUtils.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(query);
-         ResultSet rs = pstmt.executeQuery()) {
-
-      if (rs.next()) {
-        return rs.getDouble("total_amount");
-      }
-    }
-    return 0.0; // Trả về 0 nếu không có sản phẩm
   }
 
   /**
@@ -318,28 +294,6 @@ public class OrderRepository {
       throw new SQLException("Lỗi khi reset ID đơn hàng.", e);
     }
   }
-
-  /**
-   * Kiểm tra trạng thái thanh toán của đơn hàng.
-   *
-   * @param orderId ID của đơn hàng.
-   * @return true nếu đơn hàng đã được thanh toán, false nếu chưa.
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
-  public boolean isOrderPaid(int orderId) throws SQLException {
-    String query = "SELECT paid FROM orders WHERE order_id = ?";
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setInt(1, orderId);
-      ResultSet resultSet = statement.executeQuery();
-      if (resultSet.next()) {
-        return resultSet.getBoolean("paid");
-      } else {
-        throw new SQLException("Lỗi: Không tìm thấy orderId.");
-      }
-    }
-  }
-
   /**
    * Đánh dấu đơn hàng là đã thanh toán.
    *
@@ -355,24 +309,6 @@ public class OrderRepository {
     } catch (SQLException e) {
       e.printStackTrace();
       throw new SQLException("Lỗi khi đánh dấu đơn hàng đã thanh toán.", e);
-    }
-  }
-
-  /**
-   * Xóa các sản phẩm không liên quan đến bất kỳ đơn hàng nào.
-   *
-   * @throws SQLException Nếu có lỗi khi thực hiện truy vấn.
-   */
-  public void clearOrderProducts() throws SQLException {
-    String query = "DELETE FROM order_products WHERE order_id NOT IN (SELECT order_id FROM orders)";
-
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query)) {
-      int rowsAffected = statement.executeUpdate();
-      System.out.println("Đã xoá " + rowsAffected + " hàng trong order_products không liên quan đến bất kỳ đơn hàng nào.");
-    } catch (SQLException e) {
-      e.printStackTrace();
-      throw new SQLException("Lỗi khi xoá dữ liệu trong order_products.", e);
     }
   }
 

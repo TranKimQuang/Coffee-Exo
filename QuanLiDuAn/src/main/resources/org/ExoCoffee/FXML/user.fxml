@@ -4,15 +4,21 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" prefHeight="382.0" prefWidth="589.0" spacing="30.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.MainController">
-    <!-- Padding cho VBox -->
-    <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
-    </padding>
-
+<VBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(to bottom, #f0f8ff, #c6e2ff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.MainController">
     <children>
-        <Button onAction="#handlePlaceOrder" text="Đặt hàng" />
-        <Button onAction="#handleViewOrders" text="Xem đơn hàng" />
-        <Button onAction="#handleViewCart" text="Xem giỏ hàng" />
+
+
+
+        <!-- Nội dung hiện tại -->
+        <VBox alignment="CENTER" spacing="30.0" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+            <children>
+                <Button onAction="#handlePlaceOrder" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Đặt hàng" />
+                <Button onAction="#handleViewOrders" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Xem đơn hàng" />
+                <Button onAction="#handleViewCart" styleClass="login-button" stylesheets="@../CSS/styles.css" text="Xem giỏ hàng" />
+            </children>
+        </VBox>
     </children>
 </VBox>

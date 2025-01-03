@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ProductManagementController" spacing="10">
+<VBox spacing="10" style="-fx-background-color: linear-gradient(to bottom, #f0f8ff, #c6e2ff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.ProductManagementController">
     <!-- Padding cho VBox -->
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
 
     <!-- HBox chứa các trường nhập liệu và nút -->
     <HBox fx:id="hbox" spacing="10">
-        <TextField fx:id="productIdField" promptText="Mã SP"/>
-        <TextField fx:id="nameField" promptText="Tên SP"/>
-        <TextField fx:id="priceField" promptText="Giá"/>
-        <TextField fx:id="categoryField" promptText="Danh mục"/>
-        <Button text="Thêm" onAction="#handleAddProduct"/>
-        <Button text="Sửa" onAction="#handleUpdateProduct"/>
-        <Button text="Xóa" onAction="#handleDeleteProduct"/>
+        <TextField fx:id="productIdField" promptText="Mã SP" />
+        <TextField fx:id="nameField" promptText="Tên SP" />
+        <TextField fx:id="priceField" promptText="Giá" />
+        <TextField fx:id="categoryField" promptText="Danh mục" />
+        <Button onAction="#handleAddProduct" text="Thêm" />
+        <Button onAction="#handleUpdateProduct" text="Sửa" />
+        <Button onAction="#handleDeleteProduct" text="Xóa" />
     </HBox>
 
     <!-- Bảng hiển thị sản phẩm -->
     <TableView fx:id="productTable">
         <columns>
-            <TableColumn fx:id="productIdColumn" text="Mã SP"/>
-            <TableColumn fx:id="nameColumn" text="Tên SP"/>
-            <TableColumn fx:id="priceColumn" text="Giá"/>
-            <TableColumn fx:id="categoryColumn" text="Danh mục"/>
+            <TableColumn fx:id="productIdColumn" prefWidth="95.99999845027924" text="Mã SP" />
+            <TableColumn fx:id="nameColumn" prefWidth="132.59998321533203" text="Tên SP" />
+            <TableColumn fx:id="priceColumn" prefWidth="96.0" text="Giá" />
+            <TableColumn fx:id="categoryColumn" prefWidth="112.20001220703125" text="Danh mục" />
+         <TableColumn prefWidth="341.5999755859375" text="Ghi chú" />
         </columns>
     </TableView>
 
     <!-- Nút để mở cửa sổ xem thống kê -->
-    <Button text="Xem thống kê" onAction="#handleOpenStatisticsView"/>
+    <Button onAction="#handleOpenStatisticsView" text="Xem thống kê" />
 </VBox>

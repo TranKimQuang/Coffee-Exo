@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.PaidOrdersController" spacing="10">
+<VBox prefHeight="493.0" prefWidth="331.0" spacing="10" style="-fx-background-color: linear-gradient(to bottom, #f0f8ff, #c6e2ff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Controllers.PaidOrdersController">
     <!-- Padding cho VBox -->
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
 
     <!-- HBox chứa DatePicker và nút xem thống kê -->
     <HBox spacing="10">
-        <DatePicker fx:id="datePicker" promptText="Chọn ngày" onAction="#handleDateChange"/>
-        <Button text="Xem thống kê" onAction="#handleViewStatistics"/>
+        <DatePicker fx:id="datePicker" onAction="#handleDateChange" promptText="Chọn ngày" />
     </HBox>
 
     <!-- Bảng hiển thị các đơn hàng đã thanh toán -->
     <TableView fx:id="ordersTable">
         <columns>
-            <TableColumn fx:id="orderIdColumn" text="Mã Đơn Hàng"/>
-            <TableColumn fx:id="orderDateColumn" text="Ngày Đặt"/>
-            <TableColumn fx:id="totalAmountColumn" text="Tổng Số Tiền"/>
+            <TableColumn fx:id="orderIdColumn" prefWidth="93.00000131130219" text="Mã Đơn Hàng" />
+            <TableColumn fx:id="orderDateColumn" prefWidth="93.4000015258789" text="Ngày Đặt" />
+            <TableColumn fx:id="totalAmountColumn" prefWidth="123.59996032714844" text="Tổng Số Tiền" />
         </columns>
     </TableView>
 
     <!-- Nút để xem chi tiết đơn hàng -->
-    <Button text="Xem chi tiết đơn hàng" onAction="#handleViewOrderDetails"/>
+    <Button onAction="#handleViewOrderDetails" text="Xem chi tiết đơn hàng" />
 </VBox>

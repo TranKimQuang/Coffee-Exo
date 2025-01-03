@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: transparent; -fx-padding: 5px;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ExoCoffee.Custom.CustomTitleBarController">
+    <children>
+        <Label fx:id="titleLabel" alignment="CENTER_RIGHT" style="-fx-text-fill: black; -fx-font-weight: bold;" text="EXO COFFEE" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <HBox fx:id="buttonContainer" alignment="BOTTOM_CENTER" spacing="5">
+            <children>
+                <!-- Nút thu nhỏ -->
+                <Button fx:id="minimizeButton" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
+                            <image>
+                                <Image url="@../Images/minimize.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Nút phóng to -->
+                <Button fx:id="maximizeButton" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
+                            <image>
+                                <Image url="@../Images/home.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Nút đóng -->
+                <Button fx:id="closeButton" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" preserveRatio="true">
+                            <image>
+                                <Image url="@../Images/close.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</HBox>
