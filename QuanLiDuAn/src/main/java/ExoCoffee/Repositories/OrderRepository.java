@@ -91,38 +91,6 @@ public class OrderRepository {
     return orderProducts;
   }
 
-  // Phương thức lấy thống kê sản phẩm theo ngày
-  public List<StatisticsDTO> getStatisticsByDate(LocalDate date) throws SQLException {
-    String query = "SELECT op.product_id, p.product_name, SUM(op.quantity) AS total_quantity, SUM(op.price * op.quantity) AS total_price " +
-        "FROM order_products op " +
-        "JOIN orders o ON op.order_id = o.order_id " +
-        "JOIN products p ON op.product_id = p.product_id " +
-        "WHERE DATE(o.order_date) = ? AND o.paid = true " +
-        "GROUP BY op.product_id, p.product_name";
-
-    List<StatisticsDTO> statistics = new ArrayList<>();
-
-    try (Connection connection = DBUtils.getConnection();
-         PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setDate(1, Date.valueOf(date));
-      try (ResultSet resultSet = statement.executeQuery()) {
-        while (resultSet.next()) {
-          int productId = resultSet.getInt("product_id");
-          String productName = resultSet.getString("product_name");
-          int totalQuantity = resultSet.getInt("total_quantity");
-          double totalPrice = resultSet.getDouble("total_price");
-
-          StatisticsDTO stat = new StatisticsDTO(productId, productName, totalQuantity, totalPrice);
-          statistics.add(stat);
-        }
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-      throw new SQLException("Lỗi khi tải dữ liệu thống kê.", e);
-    }
-
-    return statistics;
-  }
 
   public List<OrderDTO> getUnpaidOrders() throws SQLException {
     String query = "SELECT order_id, total_amount, order_date FROM orders WHERE paid = false";

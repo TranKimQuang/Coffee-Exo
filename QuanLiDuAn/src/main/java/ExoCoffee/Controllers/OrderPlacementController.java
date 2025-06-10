@@ -62,7 +62,6 @@ public class OrderPlacementController {
       showError("Vui lòng chọn một sản phẩm để thêm vào đơn hàng.");
       return;
     }
-
     // Lấy giá trị số lượng từ quantityField
     int quantity;
     try {
@@ -75,34 +74,28 @@ public class OrderPlacementController {
       showError("Vui lòng nhập số lượng hợp lệ.");
       return;
     }
-
     // Lấy giỏ hàng từ CartManager
     Cart cart = CartManager.getCart();
-
     // Thêm sản phẩm vào giỏ hàng với số lượng từ quantityField
     cart.addItem(selectedProduct, quantity);
     showAlert("Thành công", "Sản phẩm đã được thêm vào giỏ hàng.");
-
     // Debug: Kiểm tra nội dung giỏ hàng sau khi thêm sản phẩm
     System.out.println("Nội dung giỏ hàng sau khi thêm sản phẩm:");
     for (CartItem item : cart.getItems()) {
       System.out.println("Sản phẩm: " + item.getProductName() + ", Số lượng: " + item.getQuantity() + ", Giá: " + item.getPrice() + ", Tổng giá: " + item.getTotalProduct());
     }
-
     try {
       int currentOrderId = OrderState.getCurrentOrderId();
       if (currentOrderId == -1) {
         // Nếu chưa có đơn hàng, kiểm tra và reset ID đơn hàng nếu cần
         System.out.println("currentOrderId hiện tại là -1. Tiến hành reset ID đơn hàng nếu cần.");
         orderRepository.resetOrderIdIfEmpty();
-
         // Tạo đơn hàng mới
         java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
         currentOrderId = orderRepository.addOrder(0.0, sqlDate);
         OrderState.setCurrentOrderId(currentOrderId);
         System.out.println("Đã tạo đơn hàng mới với orderId: " + currentOrderId);
       }
-
       // Đảm bảo rằng đơn hàng tồn tại trước khi thêm sản phẩm vào bảng order_products
       if (currentOrderId != -1) {
         System.out.println("Thêm sản phẩm vào order_products với orderId: " + currentOrderId);
